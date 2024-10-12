@@ -1,8 +1,41 @@
 "use client";
 
-import { Box, HStack, Image, Text, VStack } from "@chakra-ui/react";
+import { ChevronRightIcon } from "@chakra-ui/icons";
+import {
+  Box,
+  Button,
+  HStack,
+  Image,
+  Input,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
+import { useProfileStore } from "@utils/stores/profile";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function LoginPage() {
+  const [tempHandle, setTempHandle] = useState("");
+  const { setHandle } = useProfileStore();
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleTempHandleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setTempHandle(
+      value === "" ? "" : value.startsWith("@") ? value : "@" + value
+    );
+  };
+
+  const handleLogin = () => {
+    setLoading(true);
+    setHandle(tempHandle);
+
+    setTimeout(() => {
+      router.push("/search");
+    }, 1000);
+  };
+
   return (
     <Box w="100vw" h="100vh" position="relative" overflow="hidden">
       <Image
@@ -15,7 +48,7 @@ export default function LoginPage() {
         objectFit="cover"
         filter="grayscale(30%) brightness(100%)"
       />
-      <Box
+      <VStack
         h="full"
         w="50%"
         bg="rgba(0, 0, 0, 0.4)"
@@ -30,22 +63,40 @@ export default function LoginPage() {
         alignItems="center"
         justifyContent="center"
       >
-        <VStack>
-          <Text fontSize="xl">Login to</Text>
-          <HStack spacing={1}>
-            <Image
-              src="/x-icon.png"
-              alt="logo"
-              w="20px"
-              h="20px"
-              filter="invert(100%)"
-            />
-            <Text fontSize="2xl" fontWeight="bold">
-              pect
-            </Text>
-          </HStack>
+        <Text fontSize="xl">Login to</Text>
+        <HStack spacing={1}>
+          <Image
+            src="/x-icon.png"
+            alt="logo"
+            w="20px"
+            h="20px"
+            filter="invert(100%)"
+          />
+          <Text fontSize="2xl" fontWeight="bold">
+            pect
+          </Text>
+        </HStack>
+        <VStack mt={12} spacing={4}>
+          <Input
+            placeholder="@rag_pil"
+            value={tempHandle}
+            onChange={handleTempHandleChange}
+          />
+          <Button
+            bg="white"
+            color="black"
+            rightIcon={<ChevronRightIcon />}
+            onClick={handleLogin}
+            rounded="full"
+            size="sm"
+            disabled={tempHandle === ""}
+            _hover={{ bg: "rgba(255,255,255,0.6)" }}
+            isLoading={loading}
+          >
+            Login
+          </Button>
         </VStack>
-      </Box>
+      </VStack>
     </Box>
   );
 }
