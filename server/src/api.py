@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from src.socket_manager import initialize_socket
 from dotenv import load_dotenv
 import traceback
-from src.x.functions import sample_users_with_tweets_from_username
+from x_functions import sample_users_with_tweets_from_username
 import tracemalloc
 import uvicorn
 
