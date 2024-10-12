@@ -1,0 +1,10 @@
+[project]
+name = "template-server"
+version = "1.0.0"
+description = "Template server"
+readme = "../README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[standard]>=0.115.2",
+    "python-socketio>=5.11.4",
+]
