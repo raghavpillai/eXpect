@@ -10,6 +10,8 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import ProfileSection from "./components/profile-section";
 import TitleSection from "./components/title-section";
 
@@ -39,6 +41,29 @@ const BackgroundImage = () => {
 };
 
 export default function SearchPage() {
+  const [postQuery, setPostQuery] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+  const handlePostInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setPostQuery(e.target.value);
+
+    e.target.style.height = "auto";
+    e.target.style.height = `${e.target.scrollHeight}px`;
+    if (e.target.scrollHeight == 58) {
+      e.target.style.height = "38px";
+    }
+  };
+
+  const handleSearchSubmit = () => {
+    setLoading(true);
+
+    setTimeout(() => {
+      setLoading(false);
+      router.push("/dash");
+    }, 1000);
+  };
+
   return (
     <Box
       w="100vw"
@@ -94,13 +119,7 @@ export default function SearchPage() {
                 py={2}
                 pl={10}
                 pr={2}
-                onChange={(e) => {
-                  e.target.style.height = "auto";
-                  e.target.style.height = `${e.target.scrollHeight}px`;
-                  if (e.target.scrollHeight == 58) {
-                    e.target.style.height = "38px";
-                  }
-                }}
+                onChange={handlePostInputChange}
               />
             </InputGroup>
 
@@ -118,6 +137,9 @@ export default function SearchPage() {
                 color="black"
                 rounded="full"
                 _hover={{ bg: "rgba(255,255,255,0.6)" }}
+                disabled={postQuery === "" || loading}
+                onClick={handleSearchSubmit}
+                isLoading={loading}
               >
                 Search
               </Button>
