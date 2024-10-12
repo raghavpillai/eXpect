@@ -1,9 +1,18 @@
 "use client";
 
 import { Box } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import LoadingModal from "./components/loading-modal";
 
 export default function DashPage() {
+  const [dataLoading, setDataLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setDataLoading(false);
+    }, 1000);
+  }, []);
+
   return (
     <Box
       w="100vw"
@@ -15,7 +24,7 @@ export default function DashPage() {
       justifyContent="center"
       position="relative"
     >
-      <LoadingModal isOpen={true} />
+      <LoadingModal isOpen={dataLoading} />
     </Box>
   );
 }
