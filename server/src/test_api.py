@@ -65,3 +65,4 @@ def test_generate_reply_endpoint():
     assert 'reply' in data
     assert isinstance(data['reply'], str)
     assert len(data['reply'].strip()) > 0  # Ensure the reply is not empty
+    
