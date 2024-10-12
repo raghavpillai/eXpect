@@ -7,6 +7,7 @@ class User(BaseModel):
     username: str
     description: Optional[str]
     location: Optional[str]
+    image_url: Optional[str]
 
 class UserWithTweets(BaseModel):
     user: User
