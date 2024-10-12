@@ -3,3 +3,4 @@ venv
 __pycache__
 .env
 *__samples_with*
+node_modules
