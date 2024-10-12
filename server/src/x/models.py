@@ -12,3 +12,6 @@ class UserWithTweets(BaseModel):
     user: User
     tweets: List[str]
     
+class UserSampleResponse(BaseModel):
+    samples: List[UserWithTweets]
+    response_time: int

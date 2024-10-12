@@ -1,5 +1,5 @@
 from typing import List
-from models import User, UserWithTweets
+from models import User, UserWithTweets, UserSampleResponse
 from x import get_user_by_username, get_user_tweets, get_user_followers, get_user_following
 import json
 import random
@@ -66,7 +66,7 @@ async def sample_user_followers(user_id: str, max_sample: int = Config.MAX_FOLLO
     else:
         return random.sample(followers['data'], min(len(followers['data']), max_sample))
 
-async def sample_users_with_tweets_from_username(username: str, save_sample: bool = True) -> List[UserWithTweets]:
+async def sample_users_with_tweets_from_username(username: str, save_sample: bool = True) -> UserSampleResponse:
     """
     Given a username whose followers you want to sample, construct a list of the follower profiles complete with tweets.
     Optionally dump the result to a JSON file.
@@ -76,7 +76,7 @@ async def sample_users_with_tweets_from_username(username: str, save_sample: boo
     user_info = await get_user_by_username(username)
     if not user_info or 'data' not in user_info:
         print(f"User {username} not found.")
-        return []
+        return UserSampleResponse(samples=[], response_time=0)
 
     user_id = user_info['data']['id']
     sample = await sample_user_followers(user_id)
@@ -86,15 +86,17 @@ async def sample_users_with_tweets_from_username(username: str, save_sample: boo
     
     user_with_tweets_list = await asyncio.gather(*[get_user_tweets(follower) for follower in sample])
     
+    end_time = time.time()
+    response_time = int((end_time - start_time) * 1000)
+    
+    sample_response = UserSampleResponse(samples=user_with_tweets_list, response_time=response_time)
+    
     if save_sample:
         json_path = os.path.join(Config.JSON_BASE_PATH, f'follower_samples_with_tweets_{username}.json')
         with open(json_path, 'w') as f:
-            json.dump([uwt.model_dump() for uwt in user_with_tweets_list], f, indent=4)
+            json.dump(sample_response.model_dump(), f, indent=4)
     
-    end_time = time.time()
-    print(f"Total time taken to sample followers with tweets: {end_time - start_time:.2f} seconds")
-    
-    return user_with_tweets_list
+    return sample_response
 
 if __name__ == "__main__":
     asyncio.run(sample_users_with_tweets_from_username('raydelvecc'))
