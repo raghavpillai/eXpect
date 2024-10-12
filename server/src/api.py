@@ -5,9 +5,12 @@ import requests
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from src.socket_manager import initialize_socket
+# from socket_manager import initialize_socket
 from dotenv import load_dotenv
 import traceback
+from x_functions import sample_users_with_tweets_from_username
+import tracemalloc
+import uvicorn
 
 """
 FASTAPI APP
@@ -16,7 +19,7 @@ FASTAPI APP
 load_dotenv('.env.local')
 
 app: FastAPI = FastAPI(title="API", version="1.0.0")
-sio: socketio.AsyncServer = initialize_socket(app)
+# sio: socketio.AsyncServer = initialize_socket(app)
 
 # Middlewares
 app.add_middleware(
@@ -169,19 +172,28 @@ async def generate_reply_endpoint(request: Request):
         error_message = f"Error processing request: {e}\nTraceback: {traceback_str}"
         raise HTTPException(status_code=500, detail=error_message)
 
-@sio.on("connect")
-async def connect(socket_id: str):
-    pass
+@app.get("/sample_x")
+async def sample_x(username: str):
+    """
+    Endpoint to sample users with tweets from a given username.
+    """
+    try:
+        result = await sample_users_with_tweets_from_username(username)
+        return JSONResponse(result.model_dump())
+    except Exception as e:
+        traceback_str = ''.join(traceback.format_tb(e.__traceback__))
+        error_message = f"Error processing request: {e}\nTraceback: {traceback_str}"
+        raise HTTPException(status_code=500, detail=error_message)
 
-@sio.on("disconnect")
-async def disconnect(socket_id: str):
-    pass
+# @sio.on("connect")
+# async def connect(socket_id: str):
+#     pass
 
+# @sio.on("disconnect")
+# async def disconnect(socket_id: str):
+#     pass
 
 if __name__ == "__main__":
-    import tracemalloc
-    import uvicorn
-
     try:
         tracemalloc.start()
         uvicorn.run(
