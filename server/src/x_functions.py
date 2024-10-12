@@ -118,4 +118,4 @@ async def sample_users_with_tweets_from_username(username: str, save_sample: boo
         return UserSampleResponse(samples=[], response_time=0)
 
 if __name__ == "__main__":
-    asyncio.run(sample_users_with_tweets_from_username('iporollo'))
+    asyncio.run(sample_users_with_tweets_from_username('raydelvecc'))
