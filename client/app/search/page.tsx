@@ -21,7 +21,7 @@ const BackgroundImage = () => {
       right={0}
       w="100%"
       height="100%"
-      zIndex={30}
+      zIndex={1}
       backgroundImage="url('/bg-2.png')"
       backgroundSize="cover"
       backgroundPosition="center top"
@@ -61,7 +61,7 @@ export default function SearchPage() {
       >
         <BackgroundImage />
       </Box>
-      <Box position="absolute" top={4} right={4}>
+      <Box position="absolute" top={4} right={4} zIndex={40}>
         <ProfileSection />
       </Box>
       <VStack
