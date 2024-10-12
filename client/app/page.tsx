@@ -10,6 +10,7 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
+    console.log(handle);
     if (handle === "") {
       router.push("/login");
     } else {

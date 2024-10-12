@@ -11,7 +11,7 @@ const theme = extendTheme({
   styles: {
     global: () => ({
       body: {
-        bg: "rgba(5, 10, 25, 1)",
+        bg: "rgba(15, 15, 15, 1)",
       },
     }),
   },

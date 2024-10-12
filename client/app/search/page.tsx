@@ -4,40 +4,16 @@ import { AttachmentIcon, SearchIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
-  Heading,
   HStack,
-  Image,
   InputGroup,
   InputLeftElement,
   Textarea,
   VStack,
 } from "@chakra-ui/react";
 import ProfileSection from "./components/profile-section";
+import TitleSection from "./components/title-section";
 
-const TitleSection = () => {
-  const words = ["Seek", "the", "Truth"];
-
-  return (
-    <VStack spacing={3}>
-      <HStack spacing={3}>
-        {words.map((word, index) => (
-          <Heading key={index} size="2xl">
-            {word}
-          </Heading>
-        ))}
-      </HStack>
-
-      {/* <HStack spacing={1}>
-        <Text fontSize="sm" color="gray.400">
-          By
-        </Text>
-        <Image src="/x-icon.png" w="12px" h="12px" filter="invert(80%)" />
-      </HStack> */}
-    </VStack>
-  );
-};
-
-export default function Home() {
+export default function SearchPage() {
   return (
     <Box
       w="100vw"
@@ -59,7 +35,6 @@ export default function Home() {
         alignItems="center"
         justifyContent="center"
       >
-        <Image src="x-icon.png" w="64px" h="64px" filter="invert(100%)" />
         <TitleSection />
 
         <Box borderWidth={1} borderRadius="lg" p={4} w="full">
@@ -92,7 +67,15 @@ export default function Home() {
                   Attach
                 </Button>
               </HStack>
-              <Button colorScheme="teal" size="sm">
+              <Button
+                colorScheme="teal"
+                rightIcon={<SearchIcon />}
+                size="sm"
+                bg="white"
+                color="black"
+                rounded="full"
+                _hover={{ bg: "rgba(255,255,255,0.6)" }}
+              >
                 Search
               </Button>
             </HStack>

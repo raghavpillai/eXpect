@@ -21,7 +21,7 @@ export default function LoginPage() {
   const router = useRouter();
 
   const handleTempHandleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+    const { value } = e.target;
     setTempHandle(
       value === "" ? "" : value.startsWith("@") ? value : "@" + value
     );
