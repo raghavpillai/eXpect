@@ -10,13 +10,16 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
+import { useProfileStore } from "@utils/stores/profile";
 import { useRouter } from "next/navigation";
 
 export default function ProfileSection() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter();
+  const { handle, setHandle } = useProfileStore();
 
   const handleLogout = () => {
+    setHandle("");
     router.push("/login");
   };
 
@@ -39,7 +42,7 @@ export default function ProfileSection() {
         <HStack spacing={3}>
           <Avatar src="/x-icon.png" size="xs" filter="invert(100%)" />
           <Text fontSize="sm" color="gray.400">
-            @seekthetruth
+            {handle}
           </Text>
         </HStack>
       </MenuButton>
