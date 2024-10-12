@@ -5,9 +5,16 @@ export default function TitleSection() {
 
   return (
     <VStack spacing={0}>
-      <HStack>
-        <Image src="x-icon.png" w="60px" h="60px" filter="invert(100%)" />
-        <Text fontSize="7xl">PECT</Text>
+      <HStack spacing={1} alignItems="center" justifyContent="center">
+        <Text fontSize="8xl">e</Text>
+        <Image
+          src="x-icon.png"
+          w="58px"
+          h="58px"
+          filter="invert(100%)"
+          mt={5}
+        />
+        <Text fontSize="8xl">pect</Text>
       </HStack>
 
       <HStack spacing={1}>
