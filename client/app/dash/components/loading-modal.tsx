@@ -95,7 +95,7 @@ export default function LoadingModal({ isOpen }: LoadingModalProps) {
           </HStack>
         </ModalHeader>
         <ModalBody mt={2}>
-          <VStack spacing={6} align="stretch">
+          <VStack spacing={4} align="stretch">
             {stages.map((stage, index) => (
               <motion.div
                 key={index}
