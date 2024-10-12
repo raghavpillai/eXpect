@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, Box, Grid, HStack, Text, VStack } from "@chakra-ui/react";
+import { Avatar, Box, HStack, Text, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 // import LoadingModal from "./components/loading-modal";
 import PieChart from "./components/pie-chart";
@@ -10,10 +10,10 @@ const TemperatureBar = () => {
     <VStack w="100%">
       <HStack w="100%" justify="space-between" px={1}>
         <Text fontSize="xs" color="gray.400">
-          Agree
+          Disagree
         </Text>
         <Text fontSize="xs" color="gray.400">
-          Disagree
+          Agree
         </Text>
       </HStack>
       <Box
@@ -67,86 +67,86 @@ export default function DashPage() {
     {
       handle: "@rag_pil",
       reply: "This is amazing! I love this!",
-      positive: true,
+      sentiment: 1.0,
     },
     {
       handle: "@tech_enthusiast",
       reply: "Incredible innovation! Can't wait to see more.",
-      positive: true,
+      sentiment: 0.9,
     },
     {
       handle: "@skeptic123",
       reply: "I'm not convinced. Needs more evidence.",
-      positive: false,
+      sentiment: 0.2,
     },
     {
       handle: "@future_thinker",
       reply: "This could revolutionize the industry!",
-      positive: true,
+      sentiment: 0.8,
     },
     {
       handle: "@pragmatic_user",
       reply: "Interesting concept, but how practical is it?",
-      positive: false,
+      sentiment: 0.5,
     },
     {
       handle: "@innovator_x",
       reply: "Brilliant execution of a complex idea.",
-      positive: true,
+      sentiment: 0.9,
     },
     {
       handle: "@cautious_observer",
       reply: "Let's not get ahead of ourselves. Still many questions.",
-      positive: false,
+      sentiment: 0.3,
     },
     {
       handle: "@excited_newbie",
       reply: "Mind-blowing! This is why I love technology!",
-      positive: true,
+      sentiment: 1.0,
     },
     {
       handle: "@industry_veteran",
       reply: "Seen similar ideas fail. Not optimistic.",
-      positive: false,
+      sentiment: 0.1,
     },
     {
       handle: "@curious_mind",
       reply: "Fascinating approach! How does it handle [specific scenario]?",
-      positive: true,
+      sentiment: 0.7,
     },
     {
       handle: "@tech_critic",
       reply: "Overhyped. Doesn't solve the real problem.",
-      positive: false,
+      sentiment: 0.0,
     },
     {
       handle: "@forward_thinker",
       reply: "This could be a game-changer for our field!",
-      positive: true,
+      sentiment: 0.9,
     },
     {
       handle: "@practical_dev",
       reply: "Solid implementation. Looking forward to testing it.",
-      positive: true,
+      sentiment: 0.8,
     },
     {
       handle: "@ui_lover",
       reply: "The interface is so intuitive! Great user experience.",
-      positive: true,
+      sentiment: 1.0,
     },
     {
       handle: "@security_expert",
       reply: "Promising, but what about the security implications?",
-      positive: true,
+      sentiment: 0.6,
     },
   ];
 
-  useEffect(() => {
-    const agreeCount = posts.filter((post) => post.positive).length;
-    const disagreeCount = posts.filter((post) => !post.positive).length;
-    setAgrees(agreeCount);
-    setDisagrees(disagreeCount);
-  }, [posts]);
+  // useEffect(() => {
+  //   const agreeCount = posts.filter((post) => post.positive).length;
+  //   const disagreeCount = posts.filter((post) => !post.positive).length;
+  //   setAgrees(agreeCount);
+  //   setDisagrees(disagreeCount);
+  // }, [posts]);
 
   return (
     <VStack
@@ -186,7 +186,7 @@ export default function DashPage() {
       </HStack>
       <TemperatureBar />
       <HStack w="100%" justify="space-between" p={4}>
-        <Grid templateColumns="repeat(3, 1fr)" gap={4} w="50%">
+        {/* <Grid templateColumns="repeat(3, 1fr)" gap={4} w="50%">
           {posts
             .filter((post) => post.positive)
             .map((post, index) => (
@@ -200,7 +200,7 @@ export default function DashPage() {
             .map((post, index) => (
               <UserPost key={index} handle={post.handle} post={post.reply} />
             ))}
-        </Grid>
+        </Grid> */}
       </HStack>
     </VStack>
   );
