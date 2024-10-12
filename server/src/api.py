@@ -5,7 +5,7 @@ import requests
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from src.socket_manager import initialize_socket
+from socket_manager import initialize_socket
 from dotenv import load_dotenv
 import traceback
 from x_functions import sample_users_with_tweets_from_username
