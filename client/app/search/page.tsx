@@ -13,6 +13,31 @@ import {
 import ProfileSection from "./components/profile-section";
 import TitleSection from "./components/title-section";
 
+const BackgroundImage = () => {
+  return (
+    <Box
+      position="absolute"
+      top={0}
+      right={0}
+      w="100%"
+      height="100%"
+      zIndex={30}
+      backgroundImage="url('/bg-2.png')"
+      backgroundSize="cover"
+      backgroundPosition="center top"
+      _after={{
+        content: '""',
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: "linear-gradient(to top, rgba(0,0,0,0), rgba(0,0,0,0.6))",
+      }}
+    />
+  );
+};
+
 export default function SearchPage() {
   return (
     <Box
@@ -25,10 +50,22 @@ export default function SearchPage() {
       justifyContent="center"
       position="relative"
     >
+      <Box
+        position="absolute"
+        top={0}
+        left={0}
+        right={0}
+        bottom={0}
+        alignItems="center"
+        justifyContent="center"
+      >
+        <BackgroundImage />
+      </Box>
       <Box position="absolute" top={4} right={4}>
         <ProfileSection />
       </Box>
       <VStack
+        zIndex={40}
         spacing={8}
         align="stretch"
         w={{ base: "90vw", md: "80vw", lg: "70vw" }}
@@ -37,7 +74,13 @@ export default function SearchPage() {
       >
         <TitleSection />
 
-        <Box borderWidth={1} borderRadius="lg" p={4} w="full">
+        <Box
+          borderWidth={1}
+          borderRadius="lg"
+          p={4}
+          w="full"
+          backdropFilter="blur(10px)"
+        >
           <VStack spacing={4}>
             <InputGroup>
               <InputLeftElement pointerEvents="none" h="auto">
