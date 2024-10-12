@@ -60,7 +60,7 @@ export default function LoadingModal({ isOpen }: LoadingModalProps) {
       let cumulativeDelay = 0;
       stages.forEach((_, index) => {
         const randomDelay =
-          Math.floor(Math.random() * (10000 - 6000 + 1)) + 6000; // Random delay between 6000ms and 10000ms
+          Math.floor(Math.random() * (3000 - 6000 + 1)) + 3000;
         cumulativeDelay += randomDelay;
         setTimeout(() => {
           setVisibleStages((prev) => [...prev, index]);

@@ -10,7 +10,7 @@ export default function DashPage() {
   useEffect(() => {
     setTimeout(() => {
       setDataLoading(false);
-    }, 1000);
+    }, 3000); // Dummy loading time
   }, []);
 
   return (
