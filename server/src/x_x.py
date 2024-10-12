@@ -1,8 +1,8 @@
 import httpx
 import json
 import os
-from config import Config
-from utils import print_rate_limits, save_to_json
+from x_config import Config
+from x_utils import print_rate_limits, save_to_json
 
 async def call_api_with_retry(url, params=None, headers=None, printLimits=False):
     """
