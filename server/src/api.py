@@ -1,7 +1,7 @@
 import socketio
 import os
 import json
-import requests
+import httpx
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -11,6 +11,7 @@ import traceback
 from x_functions import sample_users_with_tweets_from_username
 import tracemalloc
 import uvicorn
+import asyncio
 
 """
 FASTAPI APP
@@ -56,7 +57,7 @@ def parse_input(json_input):
     post_type = json_input.get('post_type', '').strip().lower()  # 'text' or 'image'
     return name, bio, sample_tweets, post_type
 
-def generate_reply(name, bio, sample_tweets, post_content):
+async def generate_reply(name: str, bio: str, location: str, sample_tweets: list[str], post_content: str):
     """
     Generate a simulated reply using Grok LLM API based on user information and post content.
     """
@@ -66,11 +67,14 @@ def generate_reply(name, bio, sample_tweets, post_content):
             You are impersonating {name}, a real human person.
             To properly impersonate them, here is some information on them:
 
-            # BIO
+            # DESCRIPTION
             "{bio}"
 
+            # LOCATION
+            "{location}"
+
             # SAMPLE TWEETS
-            {' | '.join(sample_tweets)}
+            {'\n'.join([f'- "{tweet}"' for tweet in sample_tweets])}
 
             # YOUR TASK
             Read and simulate a reply to the following input text/post:
@@ -99,16 +103,15 @@ def generate_reply(name, bio, sample_tweets, post_content):
             }
         ],
         'model': 'grok-preview',
-        'stream': False,
-        'temperature': 0.7
+        'stream': False
     }
 
     try:
-        response = requests.post(GROK_LLM_API_URL, headers=headers, json=payload, timeout=60)
-        response.raise_for_status()
-        data = response.json()
+        async with httpx.AsyncClient() as client:
+            response = await client.post(GROK_LLM_API_URL, headers=headers, json=payload, timeout=60)
+            response.raise_for_status()
+            data = response.json()
 
-        # Extract the reply from the response
         reply = ""
         if 'choices' in data and len(data['choices']) > 0:
             reply = data['choices'][0].get('message', {}).get('content', '').strip()
@@ -117,14 +120,14 @@ def generate_reply(name, bio, sample_tweets, post_content):
             raise ValueError("No reply received from Grok LLM API.")
 
         return reply
-    except requests.exceptions.HTTPError as http_err:
+    except httpx.HTTPStatusError as http_err:
         # Capture response content if available
         error_content = response.text if response is not None else 'No response content'
         raise HTTPException(
             status_code=500,
             detail=f"Grok LLM API HTTP Error: {http_err}\nResponse Content: {error_content}"
         )
-    except requests.exceptions.RequestException as e:
+    except httpx.RequestError as e:
         raise HTTPException(
             status_code=500,
             detail=f"Grok LLM API Request Error: {e}"
@@ -159,7 +162,7 @@ async def generate_reply_endpoint(request: Request):
 
         name, bio, sample_tweets, post_type = parse_input(json_input)
 
-        reply = generate_reply(name, bio, sample_tweets, post_content)
+        reply = await generate_reply(name, bio, sample_tweets, post_content)
 
         return JSONResponse({"reply": reply})
     except HTTPException as http_exc:
@@ -194,10 +197,14 @@ async def sample_x(username: str):
 #     pass
 
 if __name__ == "__main__":
-    try:
-        tracemalloc.start()
-        uvicorn.run(
-            "src.api:app", host="0.0.0.0", port=8080, reload=True, lifespan="on"
-        )
-    except Exception as e:
-        print(f"Error: {e}")
+    # try:
+    #     tracemalloc.start()
+    #     uvicorn.run(
+    #         "src.api:app", host="0.0.0.0", port=8080, reload=True, lifespan="on"
+    #     )
+    # except Exception as e:
+    #     print(f"Error: {e}")
+
+    reply = asyncio.run(generate_reply("Ray", "Ray is an Engineer", "San Francisco", "I love donald trump", "Will trump win the election?"))
+    print(reply)
+    
