@@ -21,8 +21,8 @@ async def get_user_with_tweets(username: str, save_sample: bool = False) -> User
         id=user_info['id'],
         name=user_info['name'],
         username=user_info['username'],
-        description=user_info.get('description'),
-        location=user_info.get('location')
+        description=user_info.get('description') or "",
+        location=user_info.get('location') or ""
     )
 
     tweets_data = await get_user_tweets(user.id)
