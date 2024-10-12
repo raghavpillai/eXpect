@@ -1,7 +1,10 @@
+"use client";
+import { useProfileStore } from "@utils/stores/profile";
 import localFont from "next/font/local";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import "./globals.css";
 import { Providers } from "./providers";
-
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -18,6 +21,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { loadHandle } = useProfileStore();
+  const router = useRouter();
+  useEffect(() => {
+    const foundHandle = loadHandle();
+
+    if (foundHandle === "") {
+      router.push("/login");
+    }
+  }, [loadHandle, router]);
+
   return (
     <html lang="en" data-theme="dark">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>

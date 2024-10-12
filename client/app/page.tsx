@@ -6,17 +6,18 @@ import { useEffect } from "react";
 import { useProfileStore } from "./utils/stores/profile";
 
 export default function Home() {
-  const { handle } = useProfileStore();
+  const { handle, loadHandle } = useProfileStore();
   const router = useRouter();
 
   useEffect(() => {
-    console.log(handle);
-    if (handle === "") {
+    const foundHandle = loadHandle();
+
+    if (foundHandle === "") {
       router.push("/login");
     } else {
       router.push("/search");
     }
-  }, []);
+  }, [handle, router]);
 
   return (
     <Box
