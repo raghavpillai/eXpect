@@ -2,3 +2,5 @@ python-dotenv
 requests
 pydantic
 httpx
+uvicorn
+fastapi

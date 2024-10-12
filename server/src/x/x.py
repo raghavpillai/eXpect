@@ -1,6 +1,5 @@
 import httpx
 import json
-import asyncio
 import os
 from config import Config
 from utils import print_rate_limits, save_to_json
