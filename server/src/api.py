@@ -5,7 +5,7 @@ import requests
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from socket_manager import initialize_socket
+# from socket_manager import initialize_socket
 from dotenv import load_dotenv
 import traceback
 from x_functions import sample_users_with_tweets_from_username
@@ -19,7 +19,7 @@ FASTAPI APP
 load_dotenv('.env.local')
 
 app: FastAPI = FastAPI(title="API", version="1.0.0")
-sio: socketio.AsyncServer = initialize_socket(app)
+# sio: socketio.AsyncServer = initialize_socket(app)
 
 # Middlewares
 app.add_middleware(
@@ -185,13 +185,13 @@ async def sample_x(username: str):
         error_message = f"Error processing request: {e}\nTraceback: {traceback_str}"
         raise HTTPException(status_code=500, detail=error_message)
 
-@sio.on("connect")
-async def connect(socket_id: str):
-    pass
+# @sio.on("connect")
+# async def connect(socket_id: str):
+#     pass
 
-@sio.on("disconnect")
-async def disconnect(socket_id: str):
-    pass
+# @sio.on("disconnect")
+# async def disconnect(socket_id: str):
+#     pass
 
 if __name__ == "__main__":
     try:

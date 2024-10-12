@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from src.api import app  # Adjust the import according to your project structure
+from api import app
 
 client = TestClient(app)
 
@@ -67,7 +67,7 @@ def test_generate_reply_endpoint():
     assert len(data['reply'].strip()) > 0  # Ensure the reply is not empty
 
 def test_sample_x():
-    username = "example_user"
+    username = "eshaotran"
     response = client.get(f"/sample_x?username={username}")
     assert response.status_code == 200, f"Response error: {response.json()}"
     
@@ -87,4 +87,3 @@ def test_sample_x():
 
 if __name__ == "__main__":
     test_sample_x()
-    
