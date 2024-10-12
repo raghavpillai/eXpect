@@ -39,8 +39,9 @@ async def get_user_by_username(username):
     """
     Gets the user by their username. Returns their ID, description, name, and location. 
     """
-    if os.path.exists('users.json'):
-        with open('users.json', 'r') as f:
+    json_path = os.path.join(Config.JSON_BASE_PATH, 'users.json')
+    if os.path.exists(json_path):
+        with open(json_path, 'r') as f:
             cached_data = json.load(f)
             if username in cached_data:
                 return cached_data[username]
@@ -53,7 +54,7 @@ async def get_user_by_username(username):
     data = await call_api_with_retry(url, params=params)
     
     if data:
-        save_to_json('users.json', username, data)
+        save_to_json(json_path, username, data)
     
     return data
 
@@ -61,8 +62,9 @@ async def get_user_tweets(user_id, max_tweets: int = Config.MAX_TWEETS):
     """
     Gets list of tweets a user has made, excluding replies and retweets. Takes the sensitive tag and the tweet's text.
     """
-    if os.path.exists('user_tweets.json'):
-        with open('user_tweets.json', 'r') as f:
+    json_path = os.path.join(Config.JSON_BASE_PATH, 'user_tweets.json')
+    if os.path.exists(json_path):
+        with open(json_path, 'r') as f:
             cached_data = json.load(f)
             if str(user_id) in cached_data:
                 return cached_data[str(user_id)]
@@ -78,7 +80,7 @@ async def get_user_tweets(user_id, max_tweets: int = Config.MAX_TWEETS):
     data = await call_api_with_retry(url, params=params, headers=headers)
     
     if data:
-        save_to_json('user_tweets.json', str(user_id), data)
+        save_to_json(json_path, str(user_id), data)
     
     return data
 
@@ -86,8 +88,9 @@ async def get_user_followers(user_id, max_followers: int = Config.MAX_FOLLOWERS)
     """
     Gets list of followers for a given user ID. Returns up to 1000 followers.
     """
-    if os.path.exists('user_followers.json'):
-        with open('user_followers.json', 'r') as f:
+    json_path = os.path.join(Config.JSON_BASE_PATH, 'user_followers.json')
+    if os.path.exists(json_path):
+        with open(json_path, 'r') as f:
             cached_data = json.load(f)
             if str(user_id) in cached_data:
                 return cached_data[str(user_id)]
@@ -101,7 +104,7 @@ async def get_user_followers(user_id, max_followers: int = Config.MAX_FOLLOWERS)
     data = await call_api_with_retry(url, params=params, headers=headers)
     
     if data:
-        save_to_json('user_followers.json', str(user_id), data)
+        save_to_json(json_path, str(user_id), data)
     
     return data
 
@@ -109,8 +112,9 @@ async def get_user_following(user_id, max_following: int = Config.MAX_FOLLOWING)
     """
     Gets list of users a given user ID is following. Returns up to 1000 users.
     """
-    if os.path.exists('user_following.json'):
-        with open('user_following.json', 'r') as f:
+    json_path = os.path.join(Config.JSON_BASE_PATH, 'user_following.json')
+    if os.path.exists(json_path):
+        with open(json_path, 'r') as f:
             cached_data = json.load(f)
             if str(user_id) in cached_data:
                 return cached_data[str(user_id)]
@@ -124,6 +128,6 @@ async def get_user_following(user_id, max_following: int = Config.MAX_FOLLOWING)
     data = await call_api_with_retry(url, params=params, headers=headers)
     
     if data:
-        save_to_json('user_following.json', str(user_id), data)
+        save_to_json(json_path, str(user_id), data)
     
     return data

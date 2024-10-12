@@ -14,3 +14,5 @@ class Config:
     MAX_FOLLOWERS = 1000
     MAX_FOLLOWING = 1000
     MAX_FOLLOWER_SAMPLE = 100
+    # path for JSON files is all in /xai-hackathon/server/*.json
+    JSON_BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))

@@ -5,6 +5,7 @@ import json
 import random
 import asyncio
 import time
+import os
 from config import Config
 
 async def get_user_with_tweets(username: str, save_sample: bool = False) -> UserWithTweets:
@@ -34,7 +35,8 @@ async def get_user_with_tweets(username: str, save_sample: bool = False) -> User
     
     if save_sample:
         sample_dump = user_with_tweets.model_dump()
-        with open('SAMPLE.json', 'w') as f:
+        json_path = os.path.join(Config.JSON_BASE_PATH, 'SAMPLE.json')
+        with open(json_path, 'w') as f:
             json.dump(sample_dump, f, indent=4)
 
     return user_with_tweets
@@ -85,7 +87,8 @@ async def sample_users_with_tweets_from_username(username: str, save_sample: boo
     user_with_tweets_list = await asyncio.gather(*[get_user_tweets(follower) for follower in sample])
     
     if save_sample:
-        with open(f'follower_samples_with_tweets_{username}.json', 'w') as f:
+        json_path = os.path.join(Config.JSON_BASE_PATH, f'follower_samples_with_tweets_{username}.json')
+        with open(json_path, 'w') as f:
             json.dump([uwt.model_dump() for uwt in user_with_tweets_list], f, indent=4)
     
     end_time = time.time()
@@ -94,4 +97,4 @@ async def sample_users_with_tweets_from_username(username: str, save_sample: boo
     return user_with_tweets_list
 
 if __name__ == "__main__":
-    print(asyncio.run(sample_users_with_tweets_from_username('anjanbharadwaj_')))
+    asyncio.run(sample_users_with_tweets_from_username('raydelvecc'))
