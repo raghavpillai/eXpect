@@ -59,10 +59,10 @@ def parse_input(json_input):
     return name, bio, sample_tweets, post_type
 
 class GrokImpersonationReply(BaseModel):
-    explanation: str = Field(..., description="The explanation of the person's response to the text")
-    response: str = Field(..., description="A response tweet, as the user, to the input text")
-    agree: bool = Field(..., description="A boolean flag indicating if the user supports the text or not")
-    sentiment: float = Field(..., description="A sentiment score of the user's thoughts on the input post. 0 is disagree, 1 is agree.")
+    explanation: str = Field(..., description="The explanation of the person's impersonated response to the input post.")
+    response: str = Field(..., description="Impersonated response tweet to the input post.")
+    agree: bool = Field(..., description="A boolean flag indicating if the person supports the text or not. ALWAYS set to either true or false.")
+    sentiment: float = Field(..., description="A sentiment score of the person's thoughts on the input post. 0 is disagree, 1 is agree.")
 
 async def impersonate_reply(name: str, bio: str, location: str, sample_tweets: list[str], post_content: str) -> GrokImpersonationReply:
     """
@@ -71,7 +71,7 @@ async def impersonate_reply(name: str, bio: str, location: str, sample_tweets: l
     sys_prompt = (
         f"""
 You are impersonating {name}, a real human person.
-To properly impersonate them, here is some information on them:
+To properly impersonate this person, here is some information on them:
 
 # DESCRIPTION
 "{bio}"
@@ -83,9 +83,9 @@ To properly impersonate them, here is some information on them:
 {'\n'.join([f'- "{tweet}"' for tweet in sample_tweets])}
 
 # YOUR TASK
-You will read and simulate a reply to an input post.
+You will read and simulate a reply to an input post, as the person described above!
 
-Based on the person's information above, you will response to this post with JSON in this schema:
+You will respond to this post as the person with JSON in this schema:
 
 {json.dumps(GrokImpersonationReply.model_json_schema(), indent=2)} 
 
