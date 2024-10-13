@@ -129,7 +129,6 @@ IMPERSONATED JSON RESPONSE:
 
         return reply_json
     except httpx.HTTPStatusError as http_err:
-        # Capture response content if available
         error_content = response.text if response is not None else 'No response content'
         raise HTTPException(
             status_code=500,
@@ -170,11 +169,9 @@ async def generate_reply_endpoint(request: Request):
 
         return JSONResponse({"reply": reply})
     except HTTPException as http_exc:
-        # Re-raise the HTTPException without modifying it
         raise http_exc
 
     except Exception as e:
-        # Handle other exceptions
         traceback_str = ''.join(traceback.format_tb(e.__traceback__))
         error_message = f"Error processing request: {e}\nTraceback: {traceback_str}"
         raise HTTPException(status_code=500, detail=error_message)
