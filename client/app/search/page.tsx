@@ -11,14 +11,19 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useSearchQueryStore } from "@utils/stores/search";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ProfileSection from "./components/profile-section";
 import TitleSection from "./components/title-section";
 
+const MotionBox = motion(Box);
+const MotionVStack = motion(VStack);
+const MotionButton = motion(Button);
+
 const BackgroundImage = () => {
   return (
-    <Box
+    <MotionBox
       position="absolute"
       top={0}
       right={0}
@@ -37,6 +42,9 @@ const BackgroundImage = () => {
         bottom: 0,
         background: "linear-gradient(to top, rgba(0,0,0,0), rgba(0,0,0,0.6))",
       }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1 }}
     />
   );
 };
@@ -44,6 +52,7 @@ const BackgroundImage = () => {
 export default function SearchPage() {
   const [postQuery, setPostQuery] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const { setSearchQuery } = useSearchQueryStore();
   const router = useRouter();
   const handlePostInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -66,8 +75,12 @@ export default function SearchPage() {
     }, 1000);
   };
 
+  const handleFocus = (focused: boolean) => {
+    setIsFocused(focused);
+  };
+
   return (
-    <Box
+    <MotionBox
       w="100vw"
       h="100vh"
       color="white"
@@ -76,6 +89,9 @@ export default function SearchPage() {
       alignItems="center"
       justifyContent="center"
       position="relative"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
     >
       <Box
         position="absolute"
@@ -88,25 +104,42 @@ export default function SearchPage() {
       >
         <BackgroundImage />
       </Box>
-      <Box position="absolute" top={4} right={4} zIndex={40}>
+      <MotionBox
+        position="absolute"
+        top={4}
+        right={4}
+        zIndex={40}
+        initial={{ x: 100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ delay: 0.5, duration: 0.5 }}
+      >
         <ProfileSection />
-      </Box>
-      <VStack
+      </MotionBox>
+      <MotionVStack
         zIndex={40}
         spacing={8}
         align="stretch"
         w={{ base: "90vw", md: "80vw", lg: "70vw" }}
         alignItems="center"
         justifyContent="center"
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
       >
         <TitleSection />
-
-        <Box
+        <Box></Box>
+        <MotionBox
           borderWidth={1}
           borderRadius="lg"
           p={4}
           w="full"
           backdropFilter="blur(10px)"
+          initial={{ scale: 1, opacity: 0 }}
+          animate={{
+            scale: isFocused ? 1 : 1,
+            opacity: 1,
+          }}
+          transition={{ duration: 0.3, delay: 0.7 }}
         >
           <VStack spacing={4}>
             <InputGroup>
@@ -122,16 +155,24 @@ export default function SearchPage() {
                 pl={10}
                 pr={2}
                 onChange={handlePostInputChange}
+                onFocus={() => handleFocus(true)}
+                onBlur={() => handleFocus(false)}
               />
             </InputGroup>
 
             <HStack justify="space-between" width="100%">
               <HStack>
-                <Button leftIcon={<AttachmentIcon />} variant="ghost" size="sm">
+                <MotionButton
+                  leftIcon={<AttachmentIcon />}
+                  variant="ghost"
+                  size="sm"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   Attach
-                </Button>
+                </MotionButton>
               </HStack>
-              <Button
+              <MotionButton
                 colorScheme="teal"
                 rightIcon={<SearchIcon />}
                 size="sm"
@@ -142,13 +183,15 @@ export default function SearchPage() {
                 disabled={postQuery === "" || loading}
                 onClick={handleSearchSubmit}
                 isLoading={loading}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 Search
-              </Button>
+              </MotionButton>
             </HStack>
           </VStack>
-        </Box>
-      </VStack>
-    </Box>
+        </MotionBox>
+      </MotionVStack>
+    </MotionBox>
   );
 }
