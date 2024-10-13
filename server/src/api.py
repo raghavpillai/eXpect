@@ -54,6 +54,7 @@ class GrokImpersonationReply(BaseModel):
     explanation: str = Field(..., description="The explanation of the person's response to the text")
     response: str = Field(..., description="A response tweet, as the user, to the input text")
     agree: bool = Field(..., description="A boolean flag indicating if the user supports the text or not")
+    sentiment: float = Field(..., description="A sentiment score of the user's thoughts on the input post. 0 is disagree, 1 is agree.")
 
 async def impersonate_reply(name: str, bio: str, location: str, sample_tweets: list[str], post_content: str) -> GrokImpersonationReply:
     """
@@ -204,11 +205,7 @@ async def sample_x(username: str, sampling_text: str):
                     "response": user_response
                 }
             except Exception as e:
-                print(f"Error processing user {user_with_tweets.user.name}: {str(e)}")
-                return {
-                    "user": user_with_tweets.user.model_dump(),
-                    "response": None
-                }
+                pass
 
         responses = await asyncio.gather(*[process_user(user) for user in sample_response.samples])
             
@@ -230,9 +227,9 @@ if __name__ == "__main__":
     # except Exception as e:
     #     print(f"Error: {e}")
 
-    test = asyncio.run(impersonate_reply("Ray", "I love Trump", "Texas", ["Trump is the best! #MAGA", "I hate democrats"], "Kamala harris will win!"))
-    print(test)
+    # test = asyncio.run(impersonate_reply("Ray", "I love Trump", "Texas", ["Trump is the best! #MAGA", "I hate democrats"], "Kamala harris will win!"))
+    # print(test.model_dump())
 
-    # test = asyncio.run(sample_x('iporollo', "I love kamala harris"))
-    # print(test)
+    test = asyncio.run(sample_x('iporollo', "I love kamala harris"))
+    print(test)
     
