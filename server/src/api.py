@@ -10,9 +10,10 @@ import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import StreamingResponse
 from src.config import GROK_API_KEY_CYCLE, GROK_API_KEYS, GROK_LLM_API_URL
 from src.prompts import SYSTEM_PROMPT, USER_PROMPT
+from src.rate_limiter import limiter
 from src.utils.functions import (
     get_user_by_username,
     sample_users_with_tweets_from_username,
@@ -126,12 +127,7 @@ async def impersonate_reply(
     return GrokImpersonationReply(**reply_json)
 
 
-@app.get("/")
-async def root() -> JSONResponse:
-    """Root endpoint."""
-    return JSONResponse({"message": "API"})
-
-
+@limiter.limit("3/minute")
 @app.get("/user/{username}")
 async def get_user(username: str) -> dict[str, Any]:
     """Get user information by username."""
@@ -145,6 +141,7 @@ async def get_user(username: str) -> dict[str, Any]:
         raise HTTPException(status_code=500, detail=f"Error fetching user: {str(e)}")
 
 
+@limiter.limit("2/minute")
 @app.get("/sample_x")
 async def sample_x(username: str, sampling_text: str) -> StreamingResponse:
     """Impersonate replies of a sample set of the username's followers."""
