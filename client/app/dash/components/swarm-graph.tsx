@@ -2,6 +2,7 @@
 
 import { Box } from "@chakra-ui/react";
 import { ResponsiveSwarmPlot } from "@nivo/swarmplot";
+import { useState } from "react";
 
 interface Post {
   handle: string;
@@ -10,14 +11,29 @@ interface Post {
 }
 
 export default function SwarmGraph({ posts }: { posts: Post[] }) {
+  const [startMarker, setStartMarker] = useState<number | null>(null);
+  const [endMarker, setEndMarker] = useState<number | null>(null);
+
   const data = posts.map((post) => ({
     id: post.handle,
     group: "users",
-    value: post.sentiment * 100, // Convert sentiment to a 0-100 scale
+    value: post.sentiment * 100,
   }));
 
+  const handleClick = (node: any) => {
+    if (!startMarker) {
+      setStartMarker(node.value as number);
+      setEndMarker(null);
+    } else if (!endMarker) {
+      setEndMarker(node.value as number);
+    } else {
+      setStartMarker(node.value as number);
+      setEndMarker(null);
+    }
+  };
+
   return (
-    <Box h="full" w="full">
+    <Box h="full" w="full" position="relative">
       <ResponsiveSwarmPlot
         data={data}
         groups={["users"]}
@@ -94,7 +110,59 @@ export default function SwarmGraph({ posts }: { posts: Post[] }) {
             },
           },
         }}
+        colors={["#FFFFFF"]}
+        onClick={handleClick}
+        tooltip={({ id, value }) => (
+          <div
+            style={{
+              background: "rgba(0,0,0,0.4)",
+              padding: "6px 8px",
+              border: "1px solid rgba(255,255,255,0.2)",
+              borderRadius: "6px",
+              backdropFilter: "blur(3px)",
+              fontSize: "10px",
+              color: "#FFFFFF",
+            }}
+          >
+            <strong style={{ fontSize: "11px" }}>
+              {(value as number).toFixed(0)}
+            </strong>
+          </div>
+        )}
       />
+      {startMarker !== null && endMarker !== null && (
+        <Box
+          position="absolute"
+          top="0"
+          bottom="70px"
+          left={`${Math.min(startMarker, endMarker)}%`}
+          width={`${Math.abs(endMarker - startMarker)}%`}
+          bg="rgba(255, 255, 255, 0.1)"
+          zIndex="1"
+        />
+      )}
+      {startMarker !== null && (
+        <Box
+          position="absolute"
+          top="0"
+          bottom="70px"
+          left={`${startMarker}%`}
+          width="2px"
+          bg="rgba(255, 255, 255, 0.5)"
+          zIndex="2"
+        />
+      )}
+      {endMarker !== null && (
+        <Box
+          position="absolute"
+          top="0"
+          bottom="70px"
+          left={`${endMarker}%`}
+          width="2px"
+          bg="rgba(255, 255, 255, 0.5)"
+          zIndex="2"
+        />
+      )}
     </Box>
   );
 }
