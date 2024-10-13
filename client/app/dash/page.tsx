@@ -12,7 +12,8 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 // import LoadingModal from "./components/loading-modal";
-import { IoRefresh } from "react-icons/io5";
+import { useRouter } from "next/navigation";
+import { IoArrowBack, IoRefresh } from "react-icons/io5";
 
 import DistributionGraph from "./components/distribution-graph";
 import SwarmGraph from "./components/swarm-graph";
@@ -192,6 +193,7 @@ const Graphs = ({ posts }: { posts: any }) => {
 
 export default function DashPage() {
   const [dataLoading, setDataLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     setTimeout(() => {
@@ -362,6 +364,18 @@ export default function DashPage() {
       position="relative"
       spacing={5}
     >
+      <Button
+        onClick={() => router.push("/search")}
+        position="absolute"
+        top={4}
+        left={4}
+        size="sm"
+        leftIcon={<IoArrowBack />}
+        bg="rgba(255,255,255,0.1)"
+        _hover={{ bg: "rgba(255,255,255,0.2)" }}
+      >
+        Back
+      </Button>
       <QueryPost
         name="Rag Pil"
         handle="@rag_pil"
