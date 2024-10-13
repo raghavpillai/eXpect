@@ -1,6 +1,15 @@
 "use client";
 
 import {
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+} from "@/app/components/modal";
+import {
   Avatar,
   Box,
   Button,
@@ -11,24 +20,16 @@ import {
   HStack,
   Image,
   Text,
+  Tooltip,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
-import LoadingModal from "./components/loading-modal";
-import {
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-} from "@/app/components/modal";
 import { useProfileStore } from "@utils/stores/profile";
 import { useSearchQueryStore } from "@utils/stores/search";
 import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { IoArrowBack, IoRefresh } from "react-icons/io5";
 import DistributionGraph from "./components/distribution-graph";
+import LoadingModal from "./components/loading-modal";
 import SwarmGraph from "./components/swarm-graph";
 
 interface UserPostProps {
@@ -36,9 +37,18 @@ interface UserPostProps {
   handle: string;
   reply: string;
   sentiment: number;
+  profilePicture: string;
+  explanation: string;
 }
 
-const UserPost = ({ name, handle, reply, sentiment }: UserPostProps) => {
+const UserPost = ({
+  name,
+  handle,
+  reply,
+  sentiment,
+  profilePicture,
+  explanation,
+}: UserPostProps) => {
   const getColor = (sentiment: number) => {
     const r = Math.round(255 * (1 - sentiment));
     const g = Math.round(255 * sentiment);
@@ -58,7 +68,7 @@ const UserPost = ({ name, handle, reply, sentiment }: UserPostProps) => {
       backdropFilter="blur(5px)"
     >
       <HStack>
-        <Avatar name={handle} size="sm" mr={2} />
+        <Avatar name={handle} size="sm" mr={2} src={profilePicture} />
         <VStack align="flex-start">
           <HStack spacing={2}>
             <HStack spacing={1}>
@@ -74,16 +84,18 @@ const UserPost = ({ name, handle, reply, sentiment }: UserPostProps) => {
           <Text fontSize="sm">{reply}</Text>
         </VStack>
       </HStack>
-      <CircularProgress
-        value={sentiment * 100}
-        color={getColor(sentiment)}
-        trackColor="rgba(150,150,150,0.2)"
-        size="40px"
-      >
-        <CircularProgressLabel color="white" fontSize="3xs">
-          {Math.round(sentiment * 100)}%
-        </CircularProgressLabel>
-      </CircularProgress>
+      <Tooltip label={explanation}>
+        <CircularProgress
+          value={sentiment * 100}
+          color={getColor(sentiment)}
+          trackColor="rgba(150,150,150,0.2)"
+          size="40px"
+        >
+          <CircularProgressLabel color="white" fontSize="3xs">
+            {Math.round(sentiment * 100)}%
+          </CircularProgressLabel>
+        </CircularProgress>
+      </Tooltip>
     </HStack>
   );
 };
@@ -304,7 +316,7 @@ export default function DashPage() {
                 if (line.trim()) {
                   try {
                     const parsed = JSON.parse(line);
-                    console.log('new line', parsed)
+                    console.log("new line", parsed);
                     setData((prevData) => [...prevData, parsed]);
                     setPosts((prevData) => [...prevData, parsed]);
                     setDataLoading(false); // allow rendering to begin
@@ -339,7 +351,7 @@ export default function DashPage() {
     // }, 3000);
   }, []);
 
-  console.log('now we have all', posts)
+  console.log("now we have all", posts);
 
   const getDistributedPosts = (posts: any[], count: number) => {
     const filteredPosts = posts.filter((post) => {
@@ -448,6 +460,8 @@ export default function DashPage() {
                   handle={post.user.username}
                   reply={post.response.response}
                   sentiment={post.response.sentiment}
+                  profilePicture={post.user.image_url}
+                  explanation={post.response.explanation}
                 />
               </Box>
             ))}
@@ -479,6 +493,8 @@ export default function DashPage() {
                     handle={post.user.username}
                     reply={post.response.response}
                     sentiment={post.response.sentiment}
+                    profilePicture={post.user.image_url}
+                    explanation={post.response.explanation}
                   />
                 </Box>
               ))}
