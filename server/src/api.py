@@ -1,7 +1,8 @@
 import os
 import json
 import httpx
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
@@ -14,6 +15,7 @@ import ast
 import tracemalloc
 from pydantic import BaseModel, Field
 import time
+from itertools import cycle
 
 load_dotenv('.env')
 
@@ -27,11 +29,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-GROK_API_KEY = os.getenv("GROK_API_KEY")
+GROK_API_KEYS = [
+    os.getenv("GROK_API_KEY_1"),
+    os.getenv("GROK_API_KEY_2"),
+    os.getenv("GROK_API_KEY_3"),
+    os.getenv("GROK_API_KEY_4")
+]
+GROK_API_KEY_CYCLE = cycle(GROK_API_KEYS)
 GROK_LLM_API_URL = os.getenv("GROK_LLM_API_URL")
 
-if not GROK_API_KEY or not GROK_LLM_API_URL:
-    raise ValueError("GROK_API_KEY and GROK_LLM_API_URL must be set in environment variables.")
+if not all(GROK_API_KEYS) or not GROK_LLM_API_URL:
+    raise ValueError("All GROK_API_KEYs and GROK_LLM_API_URL must be set in environment variables.")
 
 def parse_input(json_input):
     """
@@ -52,19 +60,19 @@ def parse_input(json_input):
     return name, bio, sample_tweets, post_type
 
 class GrokImpersonationReply(BaseModel):
-    explanation: str = Field(..., description="The explanation of the person's response to the text")
-    response: str = Field(..., description="A response tweet, as the user, to the input text")
-    agree: bool = Field(..., description="A boolean flag indicating if the user supports the text or not")
-    sentiment: float = Field(..., description="A sentiment score of the user's thoughts on the input post. 0 is disagree, 1 is agree.")
+    explanation: str = Field(..., description="The explanation of the person's impersonated response to the input post. 1-2 sentences.")
+    response: str = Field(..., description="Impersonated response tweet to the input post.")
+    agree: bool = Field(..., description="A boolean flag indicating if the person supports the text or not. ALWAYS set to either true or false.")
+    sentiment: float = Field(..., description="A sentiment score of the person's thoughts on the input post. 0 is disagree, 1 is agree.")
 
 async def impersonate_reply(name: str, bio: str, location: str, sample_tweets: list[str], post_content: str) -> GrokImpersonationReply:
     """
-    Generate a simulated reply using Grok LLM API based on user information and post content.
+    Generate a simulated reply using Grok LLM API based on user information and post content. Cycles through Grok API keys until they're all rate limited!
     """
     sys_prompt = (
         f"""
 You are impersonating {name}, a real human person.
-To properly impersonate them, here is some information on them:
+To properly impersonate this person, here is some information on them:
 
 # DESCRIPTION
 "{bio}"
@@ -76,9 +84,9 @@ To properly impersonate them, here is some information on them:
 {'\n'.join([f'- "{tweet}"' for tweet in sample_tweets])}
 
 # YOUR TASK
-You will read and simulate a reply to an input post.
+You will read and simulate a reply to an input post, as the person described above!
 
-Based on the person's information above, you will response to this post with JSON in this schema:
+You will respond to this post as the person with JSON in this schema:
 
 {json.dumps(GrokImpersonationReply.model_json_schema(), indent=2)} 
 
@@ -93,10 +101,6 @@ INPUT POST:
 IMPERSONATED JSON RESPONSE:
     """
 
-    headers = {
-        'Authorization': f'Bearer {GROK_API_KEY}',
-        'Content-Type': 'application/json'
-    }
     payload = {
         'messages': [
             {
@@ -108,90 +112,73 @@ IMPERSONATED JSON RESPONSE:
                 "content": prompt
             }
         ],
-        'model': 'grok-preview',
-        'stream': False
+        'model': 'grok-2-public',
+        'stream': False,
+        'temperature': 0.9
     }
 
-    try:
-        async with httpx.AsyncClient() as client:
-            response = await client.post(GROK_LLM_API_URL, headers=headers, json=payload, timeout=60)
-            response.raise_for_status()
-            data = response.json()
+    for _ in range(len(GROK_API_KEYS)):
+        current_api_key = next(GROK_API_KEY_CYCLE)
+        headers = {
+            'Authorization': f'Bearer {current_api_key}',
+            'Content-Type': 'application/json'
+        }
 
-        reply = ""
-        if 'choices' in data and len(data['choices']) > 0:
-            reply = data['choices'][0].get('message', {}).get('content', '').strip()
-
-        if not reply:
-            raise ValueError("No reply received from Grok LLM API.")
-
-        reply = reply.replace("```json", "").replace("```", "").strip()
         try:
-            reply_json = json.loads(reply)
-        except json.JSONDecodeError:
-            try:
-                reply_json = ast.literal_eval(reply)
-            except (SyntaxError, ValueError):
-                raise ValueError("Failed to parse the reply as JSON or Python literal.")
+            async with httpx.AsyncClient() as client:
+                response = await client.post(GROK_LLM_API_URL, headers=headers, json=payload, timeout=60)
+                response.raise_for_status()
+                data = response.json()
 
-        validated_reply = GrokImpersonationReply(**reply_json)
-        return validated_reply
-    except httpx.HTTPStatusError as http_err:
-        error_content = response.text if response is not None else 'No response content'
-        raise HTTPException(
-            status_code=500,
-            detail=f"Grok LLM API HTTP Error: {http_err}\nResponse Content: {error_content}"
-        )
-    except httpx.RequestError as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Grok LLM API Request Error: {e}"
-        )
-    except ValueError as ve:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Grok LLM API Response Error: {ve}"
-        )
+            reply = ""
+            if 'choices' in data and len(data['choices']) > 0:
+                reply = data['choices'][0].get('message', {}).get('content', '').strip()
+
+            if not reply:
+                raise ValueError("No reply received from Grok LLM API.")
+
+            reply = reply.replace("```json", "").replace("```", "").strip()
+            try:
+                reply_json = json.loads(reply)
+            except json.JSONDecodeError:
+                try:
+                    reply_json = ast.literal_eval(reply)
+                except (SyntaxError, ValueError):
+                    raise ValueError("Failed to parse the reply as JSON or Python literal.")
+
+            validated_reply = GrokImpersonationReply(**reply_json)
+            return validated_reply
+
+        except httpx.HTTPStatusError as http_err:
+            if http_err.response.status_code == 429:
+                print(f"Rate limit exceeded for API key {current_api_key}. Trying next key.")
+                continue
+            else:
+                error_content = http_err.response.text if http_err.response is not None else 'No response content'
+                print(f"Grok LLM API HTTP Error: {http_err}\nResponse Content: {error_content}")
+                continue
+        except httpx.RequestError as e:
+            print(f"Grok LLM API Request Error: {e}")
+            continue
+        except ValueError as ve:
+            print(f"Grok LLM API Response Error: {ve}")
+            continue
+
+    raise HTTPException(
+        status_code=429,
+        detail="All Grok API keys have been rate limited. Please try again later."
+    )
 
 @app.get("/")
 async def root():
     return JSONResponse({"message": "API"})
-
-@app.post("/generate_reply")
-async def generate_reply_endpoint(request: Request):
-    """
-    Endpoint to generate a reply using Grok LLM API.
-    
-    Expects JSON input with user data and post content.
-    """
-    try:
-        json_input = await request.json()
-        post_content = json_input.get("post_content", "").strip()
-
-        if not post_content:
-            raise HTTPException(status_code=400, detail="post_content is required.")
-
-        name, bio, sample_tweets, post_type = parse_input(json_input)
-
-        reply = await impersonate_reply(name, bio, None, sample_tweets, post_content)
-
-        return JSONResponse({"reply": reply})
-    except HTTPException as http_exc:
-        raise http_exc
-
-    except Exception as e:
-        traceback_str = ''.join(traceback.format_tb(e.__traceback__))
-        error_message = f"Error processing request: {e}\nTraceback: {traceback_str}"
-        raise HTTPException(status_code=500, detail=error_message)
 
 @app.get("/sample_x")
 async def sample_x(username: str, sampling_text: str):
     """
     Given a target username and some sampling text, impersonate the replies of a sample set of the username's followers.
     """
-    try:
-        start_time = time.time()
-        
+    try:        
         sample_response = await sample_users_with_tweets_from_username(username)
 
         async def process_user(user_with_tweets: UserWithTweets):
@@ -208,18 +195,19 @@ async def sample_x(username: str, sampling_text: str):
                     "response": user_response.model_dump()
                 }
             except Exception as e:
-                pass
+                print(f"Error processing user {user_with_tweets.user.name}: {str(e)}")
+                return None
 
-        responses = await asyncio.gather(*[process_user(user) for user in sample_response.samples])
-        
-        end_time = time.time()
-        total_time = int((end_time - start_time) * 1000)
-            
-        return JSONResponse({
-            "samples": responses,
-            "sampling_time": sample_response.response_time,
-            "total_time": total_time
-        })
+        async def stream_responses():
+            tasks = [process_user(user) for user in sample_response.samples]
+            for result in asyncio.as_completed(tasks):
+                processed_result = await result
+                if processed_result:
+                    yield json.dumps(processed_result) + "\n"
+
+        response = StreamingResponse(stream_responses(), media_type="application/json")
+
+        return response
     except Exception as e:
         traceback_str = ''.join(traceback.format_tb(e.__traceback__))
         error_message = f"Error processing request: {e}\nTraceback: {traceback_str}"
@@ -237,7 +225,10 @@ if __name__ == "__main__":
     # test = asyncio.run(impersonate_reply("Ray", "I love Trump", "Texas", ["Trump is the best! #MAGA", "I hate democrats"], "Kamala harris will win!"))
     # print(test.model_dump())
 
-    test = asyncio.run(sample_x('iporollo', "I love kamala harris"))
-    response_content = test.body.decode('utf-8')
-    print(json.loads(response_content))
-    
+    async def test_sample_x():
+        response = await sample_x('ibab', "openai is better than x ai")
+        async for line in response.body_iterator:
+            result = json.loads(line)
+            print(result)
+
+    asyncio.run(test_sample_x())
