@@ -104,9 +104,10 @@ interface QueryPostProps {
   name: string;
   handle: string;
   content: string;
+  pfp?: string;
 }
 
-const QueryPost = ({ name, handle, content }: QueryPostProps) => {
+const QueryPost = ({ name, handle, content, pfp }: QueryPostProps) => {
   return (
     <HStack
       alignItems="flex-start"
@@ -118,7 +119,11 @@ const QueryPost = ({ name, handle, content }: QueryPostProps) => {
       maxW="500px"
       backdropFilter="blur(5px)"
     >
-      <Avatar name={handle} size="sm" mr={2} />
+      {
+        pfp ? 
+        <Avatar name={handle} src={pfp} size="sm" mr={2} /> : 
+        <Avatar name={handle} size="sm" mr={2} />
+      }
       <VStack align="flex-start">
         <HStack spacing={2}>
           <HStack spacing={1}>
@@ -276,7 +281,7 @@ export default function DashPage() {
   const [endScore, setEndScore] = useState<number | null>(null);
   const [isAllPostsModalOpen, setIsAllPostsModalOpen] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
-  const { handle } = useProfileStore();
+  const { handle, name, profilePicture } = useProfileStore();
   const { searchQuery } = useSearchQueryStore();
   const hasInitialized = useRef(false);
 
@@ -412,7 +417,7 @@ export default function DashPage() {
       >
         Back
       </Button>
-      <QueryPost name="User" handle={handle} content={searchQuery} />
+      <QueryPost name={name} handle={handle} content={searchQuery} pfp={profilePicture} />
       <Box minH="50vh" w="full" mt={6}>
         <Graphs
           posts={posts}

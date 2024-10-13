@@ -24,7 +24,7 @@ const MotionButton = motion(Button);
 
 export default function LoginPage() {
   const [tempHandle, setTempHandle] = useState("");
-  const { setHandle } = useProfileStore();
+  const { setHandle, setName, setProfilePicture } = useProfileStore();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -39,9 +39,30 @@ export default function LoginPage() {
     setLoading(true);
     setHandle(tempHandle);
 
+    const handleGetUserInfo = async () => {
+      try {
+        const url = `http://localhost:8080/user/${tempHandle}`;
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setName(data.name);
+        setProfilePicture(data.profile_image_url || data.image_url);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    handleGetUserInfo();
+
     setTimeout(() => {
       router.push("/search");
-    }, 1000);
+    }, 3000);
   };
 
   return (
