@@ -25,12 +25,19 @@ import {
 } from "@chakra-ui/react";
 import { useProfileStore } from "@utils/stores/profile";
 import { useSearchQueryStore } from "@utils/stores/search";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { IoArrowBack, IoRefresh } from "react-icons/io5";
 import DistributionGraph from "./components/distribution-graph";
 import LoadingModal from "./components/loading-modal";
 import SwarmGraph from "./components/swarm-graph";
+
+// Create motion components
+const MotionBox = motion(Box);
+const MotionHStack = motion(HStack);
+const MotionVStack = motion(VStack);
+const MotionButton = motion(Button);
 
 interface UserPostProps {
   name: string;
@@ -268,6 +275,8 @@ const BackgroundImage = () => {
   );
 };
 
+const AnimatedUserPost = motion(UserPost);
+
 export default function DashPage() {
   const [dataLoading, setDataLoading] = useState(true);
   const router = useRouter();
@@ -378,7 +387,7 @@ export default function DashPage() {
   const distributedPosts = getDistributedPosts(posts, 10);
 
   return (
-    <VStack
+    <MotionVStack
       w="full"
       h="full"
       color="white"
@@ -387,6 +396,9 @@ export default function DashPage() {
       position="relative"
       spacing={0}
       zIndex={20}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
     >
       <LoadingModal isOpen={dataLoading && data.length === 0} />
       <Box
@@ -400,7 +412,7 @@ export default function DashPage() {
       >
         <BackgroundImage />
       </Box>
-      <Button
+      <MotionButton
         onClick={() => router.push("/search")}
         position="absolute"
         top={4}
@@ -409,11 +421,27 @@ export default function DashPage() {
         leftIcon={<IoArrowBack />}
         bg="rgba(255,255,255,0.1)"
         _hover={{ bg: "rgba(255,255,255,0.2)" }}
+        initial={{ x: -50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
       >
         Back
-      </Button>
-      <QueryPost name="User" handle={handle} content={searchQuery} />
-      <Box minH="50vh" w="full" mt={6}>
+      </MotionButton>
+      <MotionBox
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <QueryPost name="User" handle={handle} content={searchQuery} />
+      </MotionBox>
+      <MotionBox
+        minH="50vh"
+        w="full"
+        mt={6}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.2, delay: 0.5 }}
+      >
         <Graphs
           posts={posts}
           startScore={startScore}
@@ -421,8 +449,13 @@ export default function DashPage() {
           setStartScore={setStartScore}
           setEndScore={setEndScore}
         />
-      </Box>
-      <VStack w="full">
+      </MotionBox>
+      <MotionVStack
+        w="full"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
         <Text
           w="full"
           textAlign="center"
@@ -432,7 +465,7 @@ export default function DashPage() {
         >
           {startScore && endScore ? `Sampled Posts` : "Posts"}
         </Text>
-        <Button
+        <MotionButton
           onClick={() => setIsAllPostsModalOpen(true)}
           mb={4}
           p={3}
@@ -440,11 +473,20 @@ export default function DashPage() {
           _hover={{ bg: "rgba(255,255,255,0.2)" }}
           mt={2}
           backdropFilter="blur(3px)"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           View All
-        </Button>
-      </VStack>
-      <HStack w="100%" justify="space-between" p={4}>
+        </MotionButton>
+      </MotionVStack>
+      <MotionHStack
+        w="100%"
+        justify="space-between"
+        p={4}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.6 }}
+      >
         <Box w="100%">
           <Grid
             templateColumns="repeat(2, 1fr)"
@@ -454,8 +496,16 @@ export default function DashPage() {
             alignItems="center"
           >
             {distributedPosts.map((post, index) => (
-              <Box key={index} display="flex" justifyContent="center">
-                <UserPost
+              <MotionBox
+                key={index}
+                display="flex"
+                justifyContent="center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <AnimatedUserPost
                   name={post.user.name}
                   handle={post.user.username}
                   reply={post.response.response}
@@ -463,11 +513,11 @@ export default function DashPage() {
                   profilePicture={post.user.image_url}
                   explanation={post.response.explanation}
                 />
-              </Box>
+              </MotionBox>
             ))}
           </Grid>
         </Box>
-      </HStack>
+      </MotionHStack>
 
       <Modal
         isOpen={isAllPostsModalOpen}
@@ -505,6 +555,6 @@ export default function DashPage() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </VStack>
+    </MotionVStack>
   );
 }
