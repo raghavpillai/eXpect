@@ -184,21 +184,31 @@ async def generate_reply_endpoint(request: Request):
 
 @app.get("/sample_x")
 async def sample_x(username: str, sampling_text: str):
+    """
+    Given a target username and some sampling text, impersonate the replies of a sample set of the username's followers.
+    """
     try:
         sample_response = await sample_users_with_tweets_from_username(username)
 
         async def process_user(user_with_tweets: UserWithTweets):
-            user_response = await impersonate_reply(
-                user_with_tweets.user.name,
-                user_with_tweets.user.description,
-                user_with_tweets.user.location,
-                user_with_tweets.tweets,
-                sampling_text
-            )
-            return {
-                "user": user_with_tweets.user.model_dump(),
-                "response": user_response
-            }
+            try:
+                user_response = await impersonate_reply(
+                    user_with_tweets.user.name,
+                    user_with_tweets.user.description,
+                    user_with_tweets.user.location,
+                    user_with_tweets.tweets,
+                    sampling_text
+                )
+                return {
+                    "user": user_with_tweets.user.model_dump(),
+                    "response": user_response
+                }
+            except Exception as e:
+                print(f"Error processing user {user_with_tweets.user.name}: {str(e)}")
+                return {
+                    "user": user_with_tweets.user.model_dump(),
+                    "response": None
+                }
 
         responses = await asyncio.gather(*[process_user(user) for user in sample_response.samples])
             
