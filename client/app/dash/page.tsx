@@ -76,8 +76,9 @@ const UserPost = ({ name, handle, reply, sentiment }: UserPostProps) => {
         value={sentiment * 100}
         color={getColor(sentiment)}
         trackColor="rgba(150,150,150,0.2)"
+        size="40px"
       >
-        <CircularProgressLabel color="white">
+        <CircularProgressLabel color="white" fontSize="3xs">
           {Math.round(sentiment * 100)}%
         </CircularProgressLabel>
       </CircularProgress>
@@ -492,10 +493,11 @@ export default function DashPage() {
       <Button
         onClick={() => setIsAllPostsModalOpen(true)}
         mb={4}
+        p={3}
         bg="rgba(255,255,255,0.1)"
         _hover={{ bg: "rgba(255,255,255,0.2)" }}
       >
-        View All Posts
+        View All
       </Button>
       <HStack w="100%" justify="space-between" p={4}>
         <Box w="100%">
