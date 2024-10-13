@@ -153,20 +153,14 @@ IMPERSONATED JSON RESPONSE:
                 continue
             else:
                 error_content = http_err.response.text if http_err.response is not None else 'No response content'
-                raise HTTPException(
-                    status_code=500,
-                    detail=f"Grok LLM API HTTP Error: {http_err}\nResponse Content: {error_content}"
-                )
+                print(f"Grok LLM API HTTP Error: {http_err}\nResponse Content: {error_content}")
+                continue
         except httpx.RequestError as e:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Grok LLM API Request Error: {e}"
-            )
+            print(f"Grok LLM API Request Error: {e}")
+            continue
         except ValueError as ve:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Grok LLM API Response Error: {ve}"
-            )
+            print(f"Grok LLM API Response Error: {ve}")
+            continue
 
     raise HTTPException(
         status_code=429,
