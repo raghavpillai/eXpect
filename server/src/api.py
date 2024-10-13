@@ -13,6 +13,7 @@ import asyncio
 import ast
 import tracemalloc
 from pydantic import BaseModel, Field
+import time
 
 load_dotenv('.env')
 
@@ -189,6 +190,8 @@ async def sample_x(username: str, sampling_text: str):
     Given a target username and some sampling text, impersonate the replies of a sample set of the username's followers.
     """
     try:
+        start_time = time.time()
+        
         sample_response = await sample_users_with_tweets_from_username(username)
 
         async def process_user(user_with_tweets: UserWithTweets):
@@ -202,16 +205,20 @@ async def sample_x(username: str, sampling_text: str):
                 )
                 return {
                     "user": user_with_tweets.user.model_dump(),
-                    "response": user_response
+                    "response": user_response.model_dump()
                 }
             except Exception as e:
                 pass
 
         responses = await asyncio.gather(*[process_user(user) for user in sample_response.samples])
+        
+        end_time = time.time()
+        total_time = int((end_time - start_time) * 1000)
             
         return JSONResponse({
             "samples": responses,
-            "response_time": sample_response.response_time
+            "sampling_time": sample_response.response_time,
+            "total_time": total_time
         })
     except Exception as e:
         traceback_str = ''.join(traceback.format_tb(e.__traceback__))
@@ -231,5 +238,6 @@ if __name__ == "__main__":
     # print(test.model_dump())
 
     test = asyncio.run(sample_x('iporollo', "I love kamala harris"))
-    print(test)
+    response_content = test.body.decode('utf-8')
+    print(json.loads(response_content))
     
