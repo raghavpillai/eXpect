@@ -64,7 +64,10 @@ export default function LoginPage() {
         justifyContent="center"
       >
         <Text fontSize="xl">Login to</Text>
-        <HStack spacing={1}>
+        <HStack spacing={0.5}>
+          <Text fontSize="3xl" fontWeight="bold">
+            e
+          </Text>
           <Image
             src="/x-icon.png"
             alt="logo"
@@ -72,7 +75,7 @@ export default function LoginPage() {
             h="20px"
             filter="invert(100%)"
           />
-          <Text fontSize="2xl" fontWeight="bold">
+          <Text fontSize="3xl" fontWeight="bold">
             pect
           </Text>
         </HStack>
