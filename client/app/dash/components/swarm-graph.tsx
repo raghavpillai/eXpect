@@ -1,7 +1,7 @@
 "use client";
 
 import { Box } from "@chakra-ui/react";
-import { ResponsiveLine } from "@nivo/line";
+import { ResponsiveSwarmPlot } from "@nivo/swarmplot";
 
 interface Post {
   handle: string;
@@ -9,62 +9,48 @@ interface Post {
   sentiment: number;
 }
 
-export default function LineGraph({ posts }: { posts: Post[] }) {
-  const data = [
-    {
-      id: "sentiment",
-      data: posts.map((post, index) => ({
-        x: index + 1,
-        y: post.sentiment * 100, // Convert sentiment to a 0-100 scale
-      })),
-    },
-  ];
+export default function SwarmGraph({ posts }: { posts: Post[] }) {
+  const data = posts.map((post) => ({
+    id: post.handle,
+    group: "users",
+    value: post.sentiment * 100, // Convert sentiment to a 0-100 scale
+  }));
 
   return (
-    <Box h="200px" w="500px">
-      <ResponsiveLine
+    <Box h="full" w="full">
+      <ResponsiveSwarmPlot
         data={data}
-        colors={"rgba(5, 153, 233, 0.8)"}
-        xScale={{ type: "point" }}
-        yScale={{
-          type: "linear",
-          min: 0,
-          max: 100,
-          stacked: true,
-          reverse: false,
+        groups={["users"]}
+        value="value"
+        valueScale={{ type: "linear", min: 0, max: 100 }}
+        size={10}
+        forceStrength={4}
+        simulationIterations={100}
+        borderColor={{
+          from: "color",
+          modifiers: [
+            ["darker", 0.6],
+            ["opacity", 0.5],
+          ],
         }}
-        axisTop={null}
-        axisRight={null}
+        margin={{ top: 20, right: 20, bottom: 70, left: 20 }}
         axisBottom={{
-          tickSize: 5,
+          tickSize: 10,
           tickPadding: 5,
-          tickRotation: 60,
-          legend: "Post Number",
-          legendOffset: 50,
-          legendPosition: "middle",
-        }}
-        axisLeft={{
-          tickSize: 8,
-          tickPadding: 3,
           tickRotation: 0,
           legend: "Sentiment Score",
-          legendOffset: -40,
           legendPosition: "middle",
+          legendOffset: 46,
         }}
-        pointSize={10}
-        pointColor={{ theme: "background" }}
-        pointBorderWidth={2}
-        pointBorderColor={{ from: "serieColor" }}
-        pointLabelYOffset={-12}
-        useMesh={true}
-        enableArea={true}
-        areaOpacity={0.15}
-        curve="monotoneX"
+        axisTop={null}
+        axisLeft={null}
+        axisRight={null}
+        layout="horizontal"
         theme={{
           background: "rgba(0, 0, 0, 0)",
           text: {
             fontSize: 12,
-            fill: "#000000",
+            fill: "#FFFFFF",
           },
           axis: {
             domain: {
@@ -76,7 +62,7 @@ export default function LineGraph({ posts }: { posts: Post[] }) {
             legend: {
               text: {
                 fontSize: 14,
-                fill: "#FFFF",
+                fill: "#FFFFFF",
                 outlineWidth: 5,
                 outlineColor: "transparent",
               },
@@ -88,7 +74,7 @@ export default function LineGraph({ posts }: { posts: Post[] }) {
               },
               text: {
                 fontSize: 13,
-                fill: "#dddddd",
+                fill: "#DDDDDD",
                 outlineWidth: 3,
                 outlineColor: "transparent",
               },
@@ -101,9 +87,9 @@ export default function LineGraph({ posts }: { posts: Post[] }) {
             },
           },
           tooltip: {
-            color: "black",
             container: {
               background: "rgba(128, 128, 128, 1)",
+              color: "#FFFFFF",
               fontSize: 12,
             },
           },

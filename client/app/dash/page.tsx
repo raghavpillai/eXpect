@@ -3,8 +3,8 @@
 import { Avatar, Box, HStack, Text, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 // import LoadingModal from "./components/loading-modal";
-import PieChart from "./components/pie-chart";
-
+import DistributionGraph from "./components/distribution-graph";
+import SwarmGraph from "./components/swarm-graph";
 const TemperatureBar = () => {
   return (
     <VStack w="100%">
@@ -139,6 +139,81 @@ export default function DashPage() {
       reply: "Promising, but what about the security implications?",
       sentiment: 0.6,
     },
+    {
+      handle: "@optimistic_coder",
+      reply: "This opens up so many possibilities! Excited to explore.",
+      sentiment: 0.95,
+    },
+    {
+      handle: "@data_scientist",
+      reply: "Impressive results. Would love to see the methodology.",
+      sentiment: 0.85,
+    },
+    {
+      handle: "@ux_designer",
+      reply: "Clean design, but accessibility could be improved.",
+      sentiment: 0.65,
+    },
+    {
+      handle: "@startup_founder",
+      reply: "Game-changing potential. How soon can we implement?",
+      sentiment: 0.9,
+    },
+    {
+      handle: "@ethical_tech",
+      reply: "Innovative, but we need to consider the ethical implications.",
+      sentiment: 0.55,
+    },
+    {
+      handle: "@ai_researcher",
+      reply: "Fascinating approach. Curious about the training data.",
+      sentiment: 0.75,
+    },
+    {
+      handle: "@skeptical_user",
+      reply: "Sounds too good to be true. What's the catch?",
+      sentiment: 0.25,
+    },
+    {
+      handle: "@tech_journalist",
+      reply: "Groundbreaking if it delivers. Looking forward to testing.",
+      sentiment: 0.7,
+    },
+    {
+      handle: "@product_manager",
+      reply: "Great concept. How does it fit into existing workflows?",
+      sentiment: 0.8,
+    },
+    {
+      handle: "@privacy_advocate",
+      reply: "Innovative, but raises serious privacy concerns.",
+      sentiment: 0.4,
+    },
+    {
+      handle: "@tech_optimist",
+      reply: "This is the future! Can't wait to see it in action.",
+      sentiment: 0.95,
+    },
+    {
+      handle: "@cautious_adopter",
+      reply: "Interesting, but I'll wait for more real-world testing.",
+      sentiment: 0.5,
+    },
+    {
+      handle: "@industry_analyst",
+      reply: "Potential disruptor. Keeping a close eye on developments.",
+      sentiment: 0.75,
+    },
+    {
+      handle: "@tech_skeptic",
+      reply: "Seen similar promises before. Doubtful it'll deliver.",
+      sentiment: 0.15,
+    },
+    {
+      handle: "@enthusiastic_dev",
+      reply: "Can't wait to get my hands on this! So many possibilities!",
+      sentiment: 0.95,
+    },
   ];
 
   // useEffect(() => {
@@ -159,7 +234,10 @@ export default function DashPage() {
       spacing={0}
     >
       {/* <LoadingModal isOpen={dataLoading} /> */}
-      <PieChart agrees={agrees} disagrees={disagrees} />
+      {/* <PieChart agrees={agrees} disagrees={disagrees} /> */}
+      {/* <LineGraph posts={posts} /> */}
+      <DistributionGraph posts={posts} />
+      <SwarmGraph posts={posts} />
       <HStack
         spacing={0}
         bg="rgba(255,255,255,0.1)"
