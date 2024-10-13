@@ -21,6 +21,7 @@ import Graphs from "./components/graphs";
 import LoadingModal from "./components/loading-modal";
 import QueryPost from "./components/query-post";
 import UserPost from "./components/user-post";
+import config from '@/config';
 
 // Create motion components
 const MotionBox = motion(Box as any);
@@ -56,7 +57,7 @@ export default function DashPage() {
 
     const handleSendQuery = async () => {
       try {
-        const url = `http://localhost:8080/sample_x?username=${handle}&sampling_text=${searchQuery}`;
+        const url = `${config.serverUrl}/sample_x?username=${handle}&sampling_text=${searchQuery}`;
         const response = await fetch(url);
 
         if (!response.ok) {
