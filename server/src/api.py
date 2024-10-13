@@ -11,6 +11,7 @@ import uvicorn
 import asyncio
 import ast
 import tracemalloc
+from pydantic import BaseModel, Field
 
 load_dotenv('.env')
 
@@ -48,7 +49,12 @@ def parse_input(json_input):
     post_type = json_input.get('post_type', '').strip().lower()  # 'text' or 'image'
     return name, bio, sample_tweets, post_type
 
-async def generate_reply(name: str, bio: str, location: str, sample_tweets: list[str], post_content: str):
+class GrokImpersonationReply(BaseModel):
+    explanation: str = Field(..., description="The explanation of the person's response to the text")
+    response: str = Field(..., description="A response tweet, as the user, to the input text")
+    agree: bool = Field(..., description="A boolean flag indicating if the user supports the text or not")
+
+async def generate_reply(name: str, bio: str, location: str, sample_tweets: list[str], post_content: str) -> GrokImpersonationReply:
     """
     Generate a simulated reply using Grok LLM API based on user information and post content.
     """
@@ -127,7 +133,8 @@ IMPERSONATED JSON RESPONSE:
             except (SyntaxError, ValueError):
                 raise ValueError("Failed to parse the reply as JSON or Python literal.")
 
-        return reply_json
+        validated_reply = GrokImpersonationReply(**reply_json)
+        return validated_reply
     except httpx.HTTPStatusError as http_err:
         error_content = response.text if response is not None else 'No response content'
         raise HTTPException(
