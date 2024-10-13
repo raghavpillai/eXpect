@@ -1,13 +1,20 @@
-# X AI Hackathon!
-Project here.
+# eXpect: Predict the Truth
 
-# Notes
+eXpect is the truth-seeking tool. It uses a multi-agent interface and large-scale simulation to predict human reactions to tweets, speeches, and any other input text. You can't do this with most AIs - they're censored and cannot always reflect the full spectrum of human opinion. Using Grok (unfiltered & diverse) and X (to crowdsource real human personas), we can now simulate entire communities' raw reactions to any topic (politics, consumer behavior, etc). eXpect will allow the world to more accurately identify the communal source of truth... to provide a crystal ball into the future. And, as a bonus, on X you can predict how many likes your tweet will get!
+
+# Stack
+
+This is a fun way to explore these very new APIs:
 * X API:
-    * Getting started with the X API: https://developer.x.com/en/docs/x-api/getting-started/make-your-first-request
-        * To make requests, must include bearer token in the headers for this to work!
-    * Sample code for the X API V2: https://github.com/xdevplatform/Twitter-API-v2-sample-code/tree/main
+    * https://developer.x.com/en/docs/x-api/getting-started/make-your-first-request
     * API Reference: https://developer.x.com/en/docs/api-reference-index
-    * Getting videos with the Twitter API: https://replit.com/@xdevelopers/X-API-Video-Player?v=1#app.py
 * XAI API:
-    * Integrations (where we can use OpenAI and Anthropic SDK): https://docs.x.ai/api/integrations
-        * Unfortunately no function calling or json mode yet, so can't use instructor
+    * https://docs.x.ai/api/integrations
+
+Note: you'll need API keys (into .env) to run. We use a round robin key system (see api.py)!
+
+# How it Works
+
+1. Pulling X Data: we pull 1,000 of your followers, sample 100 at random, and then pull 100 of their tweets all simultaneously via the X API.
+2. Simulation: we simultaneously make 100 calls to Grok mini. Each digests an individual's Twitter profile and tweets in order to simulate their reaction to a query.
+3. Display: we display a histogram of the community's sentiment (float) and a host of reactions (string).
