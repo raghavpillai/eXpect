@@ -19,10 +19,14 @@ async def call_api_with_retry(url, params=None, headers=None, printLimits=False)
         if headers is None:
             headers = {}
 
+        print("BEARER TOKENS:", BEARER_TOKENS)
+
         async with httpx.AsyncClient() as client:
-            for i in range(len(BEARER_TOKENS)):
+            print("BEARER TOKENS:", BEARER_TOKENS)
+            tokens = list(BEARER_TOKENS)  # Create a local copy of BEARER_TOKENS
+            for i in range(len(tokens)):
                 try:
-                    bearer_token = BEARER_TOKENS[i]
+                    bearer_token = tokens[i]
                     headers["Authorization"] = f"Bearer {bearer_token}"
 
                     response = await client.get(url, headers=headers, params=params)
@@ -35,9 +39,9 @@ async def call_api_with_retry(url, params=None, headers=None, printLimits=False)
                     elif response.status_code == 429:
                         print_rate_limits(response.headers)
                         print("RATE LIMIT EXCEEDED. TRYING NEXT TOKEN!")
-                        BEARER_TOKENS = (
-                            BEARER_TOKENS[i + 1 :] + BEARER_TOKENS[: i + 1]
-                        )  # shift the 429'd token to the end of the list
+                        tokens = (
+                            tokens[i + 1 :] + tokens[: i + 1]
+                        )  # Rotate the tokens list
                     else:
                         print(f"Error: {response.status_code}")
                         print(response.text)
@@ -45,8 +49,8 @@ async def call_api_with_retry(url, params=None, headers=None, printLimits=False)
                     continue
 
         print("All bearer tokens exhausted without success.")
-    except Exception:
-        pass
+    except Exception as e:
+        print(e)
     return None
 
 
@@ -65,7 +69,8 @@ async def get_user_by_username(username):
         params = {"user.fields": "description,location,profile_image_url"}
 
         data = await call_api_with_retry(url, params=params)
-
+        print("DATA!")
+        print(data)
         if data:
             Database.save_cached_data("users", username, data)
 
