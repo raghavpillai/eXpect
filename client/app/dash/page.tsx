@@ -251,7 +251,7 @@ export default function DashPage() {
 
     setTimeout(() => {
       setDataLoading(false);
-    }, 3000); // Dummy loading time
+    }, 3000);
   }, [hasInitialized]);
 
   const posts = [
