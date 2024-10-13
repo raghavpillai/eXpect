@@ -6,6 +6,7 @@ import {
   Button,
   ButtonGroup,
   HStack,
+  Image,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -63,6 +64,42 @@ const UserPost = ({ handle, post }: UserPostProps) => {
   );
 };
 
+interface QueryPostProps {
+  name: string;
+  handle: string;
+  content: string;
+}
+
+const QueryPost = ({ name, handle, content }: QueryPostProps) => {
+  return (
+    <HStack
+      alignItems="flex-start"
+      p={4}
+      bg="rgba(255,255,255,0.05)"
+      borderRadius="xl"
+      border="1px solid rgba(255,255,255,0.2)"
+      w="full"
+      maxW="500px"
+    >
+      <Avatar name={handle} size="sm" />
+      <VStack align="flex-start">
+        <HStack spacing={2}>
+          <HStack spacing={1}>
+            <Text fontSize="sm" fontWeight="bold">
+              {name}
+            </Text>
+            <Image src="verified.svg" alt="verified" w={4} h={4} />
+          </HStack>
+          <Text fontSize="xs" color="gray.400">
+            {handle}
+          </Text>
+        </HStack>
+        <Text fontSize="sm">{content}</Text>
+      </VStack>
+    </HStack>
+  );
+};
+
 const Graphs = ({ posts }: { posts: any }) => {
   const [selectedGraph, setSelectedGraph] = useState("distribution");
   const [startScore, setStartScore] = useState<number | null>(null);
@@ -76,7 +113,7 @@ const Graphs = ({ posts }: { posts: any }) => {
   return (
     <VStack w="full" h="full">
       <HStack w="full" justify="space-between">
-        <HStack px={4}>
+        <HStack px={4} spacing={4}>
           <Button
             size="xs"
             bg="rgba(255,255,255,0.4)"
@@ -88,7 +125,7 @@ const Graphs = ({ posts }: { posts: any }) => {
             Reset
           </Button>
           <Text
-            fontSize="sm"
+            fontSize="xs"
             color="gray.400"
             display={startScore && !endScore ? "block" : "none"}
           >
@@ -96,7 +133,7 @@ const Graphs = ({ posts }: { posts: any }) => {
           </Text>
 
           <Text
-            fontSize="sm"
+            fontSize="xs"
             color="gray.400"
             display={startScore && endScore ? "block" : "none"}
           >
@@ -155,8 +192,6 @@ const Graphs = ({ posts }: { posts: any }) => {
 
 export default function DashPage() {
   const [dataLoading, setDataLoading] = useState(true);
-  const [agrees, setAgrees] = useState(0);
-  const [disagrees, setDisagrees] = useState(0);
 
   useEffect(() => {
     setTimeout(() => {
@@ -317,13 +352,6 @@ export default function DashPage() {
     },
   ];
 
-  // useEffect(() => {
-  //   const agreeCount = posts.filter((post) => post.positive).length;
-  //   const disagreeCount = posts.filter((post) => !post.positive).length;
-  //   setAgrees(agreeCount);
-  //   setDisagrees(disagreeCount);
-  // }, [posts]);
-
   return (
     <VStack
       w="100vw"
@@ -332,33 +360,16 @@ export default function DashPage() {
       p={8}
       display="flex"
       position="relative"
-      spacing={0}
+      spacing={5}
     >
-      <Graphs posts={posts} />
-      <HStack
-        spacing={0}
-        bg="rgba(255,255,255,0.1)"
-        border="1px solid rgba(255,255,255,0.2)"
-        borderRadius="xl"
-        p={2}
-        justify="space-between"
-        w="200px"
-        mb={12}
-      >
-        <VStack w="50%">
-          <Text fontSize="sm" fontWeight="bold">
-            Agree
-          </Text>
-          <Text>{agrees}</Text>
-        </VStack>
-        <Box w="1px" h="100%" bg="rgba(255,255,255,0.1)" />
-        <VStack w="50%">
-          <Text fontSize="sm" fontWeight="bold">
-            Disagree
-          </Text>
-          <Text>{disagrees}</Text>
-        </VStack>
-      </HStack>
+      <QueryPost
+        name="Rag Pil"
+        handle="@rag_pil"
+        content="This is amazing! I love this!"
+      />
+      <Box h="40vh" w="full">
+        <Graphs posts={posts} />
+      </Box>
       <TemperatureBar />
       <HStack w="100%" justify="space-between" p={4}>
         {/* <Grid templateColumns="repeat(3, 1fr)" gap={4} w="50%">

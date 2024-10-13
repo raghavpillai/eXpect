@@ -13,16 +13,16 @@ interface SwarmGraphProps {
   posts: Post[];
   startScore: number | null;
   endScore: number | null;
-  onStartScoreChange: (score: number | null) => void;
-  onEndScoreChange: (score: number | null) => void;
+  setStartScore: (score: number | null) => void;
+  setEndScore: (score: number | null) => void;
 }
 
 export default function SwarmGraph({
   posts,
   startScore,
   endScore,
-  onStartScoreChange,
-  onEndScoreChange,
+  setStartScore,
+  setEndScore,
 }: SwarmGraphProps) {
   const data = posts.map((post) => ({
     id: post.handle,
@@ -32,12 +32,12 @@ export default function SwarmGraph({
 
   const handleClick = (node: any) => {
     if (!startScore) {
-      onStartScoreChange(node.value as number);
+      setStartScore(node.value as number);
     } else if (!endScore) {
-      onEndScoreChange(node.value as number);
+      setEndScore(node.value as number);
     } else {
-      onStartScoreChange(node.value as number);
-      onEndScoreChange(null);
+      setStartScore(node.value as number);
+      setEndScore(null);
     }
   };
 
