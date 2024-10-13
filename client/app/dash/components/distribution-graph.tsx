@@ -92,7 +92,9 @@ export default function DistributionGraph({
 
   // Add this new function to generate the highlighted area data
   const getHighlightedAreaData = () => {
-    if (startScore === null || endScore === null) return [];
+    if (startScore === null || endScore === null) {
+      return [];
+    }
 
     const start = Math.min(startScore, endScore);
     const end = Math.max(startScore, endScore);
@@ -235,6 +237,7 @@ export default function DistributionGraph({
             },
             legend: "Start",
             legendOrientation: "vertical",
+            legendTextColor: "#FFFFFF", // Make legend text white
           },
           endScore && {
             axis: "x",
@@ -246,6 +249,7 @@ export default function DistributionGraph({
             },
             legend: "End",
             legendOrientation: "vertical",
+            legendTextColor: "#FFFFFF", // Make legend text white
           },
         ].filter(Boolean)}
         // Add these animation properties
