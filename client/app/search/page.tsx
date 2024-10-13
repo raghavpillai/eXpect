@@ -109,7 +109,7 @@ export default function SearchPage() {
           <VStack spacing={4}>
             <InputGroup>
               <InputLeftElement pointerEvents="none" h="auto">
-                <SearchIcon color="gray.500" mt={12} />
+                <SearchIcon color="gray.500" mt={3} />
               </InputLeftElement>
               <Textarea
                 placeholder="You ask, we answer..."
