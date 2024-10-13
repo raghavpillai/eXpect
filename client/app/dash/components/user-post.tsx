@@ -47,7 +47,13 @@ export default function UserPost({
       backdropFilter="blur(5px)"
     >
       <HStack>
-        <Avatar name={handle} size="sm" mr={2} src={profilePicture} />
+        <Avatar
+          name={handle}
+          size="sm"
+          mr={2}
+          src={profilePicture}
+          loading="lazy"
+        />
         <VStack align="flex-start">
           <HStack spacing={2}>
             <HStack spacing={1}>
