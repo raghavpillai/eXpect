@@ -1,17 +1,16 @@
-import socketio
 import os
 import json
 import httpx
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-# from socket_manager import initialize_socket
 from dotenv import load_dotenv
 import traceback
 from x_functions import sample_users_with_tweets_from_username
-import tracemalloc
 import uvicorn
 import asyncio
+import ast
+import tracemalloc
 
 """
 FASTAPI APP
@@ -20,7 +19,6 @@ FASTAPI APP
 load_dotenv('.env.local')
 
 app: FastAPI = FastAPI(title="API", version="1.0.0")
-# sio: socketio.AsyncServer = initialize_socket(app)
 
 # Middlewares
 app.add_middleware(
@@ -61,31 +59,39 @@ async def generate_reply(name: str, bio: str, location: str, sample_tweets: list
     """
     Generate a simulated reply using Grok LLM API based on user information and post content.
     """
-    # Construct the prompt
-    prompt = (
+    sys_prompt = (
         f"""
-            You are impersonating {name}, a real human person.
-            To properly impersonate them, here is some information on them:
+You are impersonating {name}, a real human person.
+To properly impersonate them, here is some information on them:
 
-            # DESCRIPTION
-            "{bio}"
+# DESCRIPTION
+"{bio}"
 
-            # LOCATION
-            "{location}"
+# LOCATION
+"{location}"
 
-            # SAMPLE TWEETS
-            {'\n'.join([f'- "{tweet}"' for tweet in sample_tweets])}
+# SAMPLE TWEETS
+{'\n'.join([f'- "{tweet}"' for tweet in sample_tweets])}
 
-            # YOUR TASK
-            Read and simulate a reply to the following input text/post:
-            "{post_content}".
+# YOUR TASK
+You will read and simulate a reply to an input post.
 
-            Based on their beliefs, personality, and writing style:
-                1. Thoughts: Formulate your unfiltered thoughts to the input text.
-                2. Response: write an unfiltered response tweet to the input text.
-                3. Agree or Disagree: decide if you agree or disagree with the input text.
+Based on the person's information above, you will response to this post with JSON with the following keys:
+
+1. explanation: the explanation of the person's response to the text.
+2. response: a response tweet, as the user, to the input text.
+3. agree: a boolean flag, true or false, of if the user supports the text or not. 
+
+Output NOTHING else except for this JSON.
         """
     )
+
+    prompt = f"""
+INPUT POST:
+{post_content}
+
+IMPERSONATED JSON RESPONSE:
+    """
 
     headers = {
         'Authorization': f'Bearer {GROK_API_KEY}',
@@ -95,7 +101,7 @@ async def generate_reply(name: str, bio: str, location: str, sample_tweets: list
         'messages': [
             {
                 "role": "system",
-                "content": "You are a helpful impersonation assistant."
+                "content": sys_prompt
             },
             {
                 "role": "user",
@@ -119,7 +125,16 @@ async def generate_reply(name: str, bio: str, location: str, sample_tweets: list
         if not reply:
             raise ValueError("No reply received from Grok LLM API.")
 
-        return reply
+        reply = reply.replace("```json", "").replace("```", "").strip()
+        try:
+            reply_json = json.loads(reply)
+        except json.JSONDecodeError:
+            try:
+                reply_json = ast.literal_eval(reply)
+            except (SyntaxError, ValueError):
+                raise ValueError("Failed to parse the reply as JSON or Python literal.")
+
+        return reply_json
     except httpx.HTTPStatusError as http_err:
         # Capture response content if available
         error_content = response.text if response is not None else 'No response content'
@@ -188,23 +203,11 @@ async def sample_x(username: str):
         error_message = f"Error processing request: {e}\nTraceback: {traceback_str}"
         raise HTTPException(status_code=500, detail=error_message)
 
-# @sio.on("connect")
-# async def connect(socket_id: str):
-#     pass
-
-# @sio.on("disconnect")
-# async def disconnect(socket_id: str):
-#     pass
-
 if __name__ == "__main__":
-    # try:
-    #     tracemalloc.start()
-    #     uvicorn.run(
-    #         "src.api:app", host="0.0.0.0", port=8080, reload=True, lifespan="on"
-    #     )
-    # except Exception as e:
-    #     print(f"Error: {e}")
-
-    reply = asyncio.run(generate_reply("Ray", "Ray is an Engineer", "San Francisco", "I love donald trump", "Will trump win the election?"))
-    print(reply)
-    
+    try:
+        tracemalloc.start()
+        uvicorn.run(
+            "src.api:app", host="0.0.0.0", port=8080, reload=True, lifespan="on"
+        )
+    except Exception as e:
+        print(f"Error: {e}")
