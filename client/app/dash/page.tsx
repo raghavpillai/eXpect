@@ -13,7 +13,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 // import LoadingModal from "./components/loading-modal";
 import {
   Modal,
@@ -234,13 +234,13 @@ export default function DashPage() {
   const [isAllPostsModalOpen, setIsAllPostsModalOpen] = useState(false);
   const { handle } = useProfileStore();
   const { searchQuery } = useSearchQueryStore();
-  const [hasInitialized, setHasInitialized] = useState(false);
+  const hasInitialized = useRef(false);
 
   useEffect(() => {
-    if (hasInitialized) {
+    if (hasInitialized.current) {
       return;
     }
-    setHasInitialized(true);
+    hasInitialized.current = true;
 
     const handleSendQuery = async () => {
       console.log(handle);
@@ -252,7 +252,7 @@ export default function DashPage() {
     setTimeout(() => {
       setDataLoading(false);
     }, 3000);
-  }, [hasInitialized]);
+  }, []);
 
   const posts = [
     {
