@@ -14,6 +14,7 @@ import ast
 import tracemalloc
 from pydantic import BaseModel, Field
 import time
+from itertools import cycle
 
 load_dotenv('.env')
 
@@ -27,11 +28,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-GROK_API_KEY = os.getenv("GROK_API_KEY")
+GROK_API_KEYS = [
+    os.getenv("GROK_API_KEY_1"),
+    os.getenv("GROK_API_KEY_2"),
+    os.getenv("GROK_API_KEY_3"),
+    os.getenv("GROK_API_KEY_4")
+]
+GROK_API_KEY_CYCLE = cycle(GROK_API_KEYS)
 GROK_LLM_API_URL = os.getenv("GROK_LLM_API_URL")
 
-if not GROK_API_KEY or not GROK_LLM_API_URL:
-    raise ValueError("GROK_API_KEY and GROK_LLM_API_URL must be set in environment variables.")
+if not all(GROK_API_KEYS) or not GROK_LLM_API_URL:
+    raise ValueError("All GROK_API_KEYs and GROK_LLM_API_URL must be set in environment variables.")
 
 def parse_input(json_input):
     """
@@ -59,7 +66,7 @@ class GrokImpersonationReply(BaseModel):
 
 async def impersonate_reply(name: str, bio: str, location: str, sample_tweets: list[str], post_content: str) -> GrokImpersonationReply:
     """
-    Generate a simulated reply using Grok LLM API based on user information and post content.
+    Generate a simulated reply using Grok LLM API based on user information and post content. Cycles through Grok API keys until they're all rate limited!
     """
     sys_prompt = (
         f"""
@@ -93,10 +100,6 @@ INPUT POST:
 IMPERSONATED JSON RESPONSE:
     """
 
-    headers = {
-        'Authorization': f'Bearer {GROK_API_KEY}',
-        'Content-Type': 'application/json'
-    }
     payload = {
         'messages': [
             {
@@ -108,59 +111,67 @@ IMPERSONATED JSON RESPONSE:
                 "content": prompt
             }
         ],
-        'model': 'grok-preview',
+        'model': 'grok-2-mini-public',
         'stream': False
     }
 
-    try:
-        async with httpx.AsyncClient() as client:
-            response = await client.post(GROK_LLM_API_URL, headers=headers, json=payload, timeout=60)
-            response.raise_for_status()
-            data = response.json()
+    for _ in range(len(GROK_API_KEYS)):
+        current_api_key = next(GROK_API_KEY_CYCLE)
+        headers = {
+            'Authorization': f'Bearer {current_api_key}',
+            'Content-Type': 'application/json'
+        }
 
-        reply = ""
-        if 'choices' in data and len(data['choices']) > 0:
-            reply = data['choices'][0].get('message', {}).get('content', '').strip()
-
-        if not reply:
-            raise ValueError("No reply received from Grok LLM API.")
-
-        reply = reply.replace("```json", "").replace("```", "").strip()
         try:
-            reply_json = json.loads(reply)
-        except json.JSONDecodeError:
-            try:
-                reply_json = ast.literal_eval(reply)
-            except (SyntaxError, ValueError):
-                raise ValueError("Failed to parse the reply as JSON or Python literal.")
+            async with httpx.AsyncClient() as client:
+                response = await client.post(GROK_LLM_API_URL, headers=headers, json=payload, timeout=60)
+                response.raise_for_status()
+                data = response.json()
 
-        validated_reply = GrokImpersonationReply(**reply_json)
-        return validated_reply
-    except httpx.HTTPStatusError as http_err:
-        if http_err.response.status_code == 429:
-            remaining_requests = http_err.response.headers.get('x-ratelimit-remaining', 'Unknown')
-            reset_time = http_err.response.headers.get('x-ratelimit-reset', 'Unknown')
-            print(f"Rate limit exceeded. Remaining requests: {remaining_requests}, Reset time: {reset_time}")
-            raise HTTPException(
-                status_code=429,
-                detail=f"Rate limit exceeded. Please try again later. Remaining requests: {remaining_requests}, Reset time: {reset_time}"
-            )
-        else:
-            error_content = http_err.response.text if http_err.response is not None else 'No response content'
+            reply = ""
+            if 'choices' in data and len(data['choices']) > 0:
+                reply = data['choices'][0].get('message', {}).get('content', '').strip()
+
+            if not reply:
+                raise ValueError("No reply received from Grok LLM API.")
+
+            reply = reply.replace("```json", "").replace("```", "").strip()
+            try:
+                reply_json = json.loads(reply)
+            except json.JSONDecodeError:
+                try:
+                    reply_json = ast.literal_eval(reply)
+                except (SyntaxError, ValueError):
+                    raise ValueError("Failed to parse the reply as JSON or Python literal.")
+
+            validated_reply = GrokImpersonationReply(**reply_json)
+            return validated_reply
+
+        except httpx.HTTPStatusError as http_err:
+            if http_err.response.status_code == 429:
+                print(f"Rate limit exceeded for API key {current_api_key}. Trying next key.")
+                continue
+            else:
+                error_content = http_err.response.text if http_err.response is not None else 'No response content'
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Grok LLM API HTTP Error: {http_err}\nResponse Content: {error_content}"
+                )
+        except httpx.RequestError as e:
             raise HTTPException(
                 status_code=500,
-                detail=f"Grok LLM API HTTP Error: {http_err}\nResponse Content: {error_content}"
+                detail=f"Grok LLM API Request Error: {e}"
             )
-    except httpx.RequestError as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Grok LLM API Request Error: {e}"
-        )
-    except ValueError as ve:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Grok LLM API Response Error: {ve}"
-        )
+        except ValueError as ve:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Grok LLM API Response Error: {ve}"
+            )
+
+    raise HTTPException(
+        status_code=429,
+        detail="All Grok API keys have been rate limited. Please try again later."
+    )
 
 @app.get("/")
 async def root():
@@ -223,4 +234,3 @@ if __name__ == "__main__":
     test = asyncio.run(sample_x('iporollo', "I love kamala harris"))
     response_content = test.body.decode('utf-8')
     print(json.loads(response_content))
-    
