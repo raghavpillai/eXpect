@@ -74,7 +74,7 @@ async def sample_user_followers(user_id: str, max_sample: int = Config.MAX_FOLLO
         print(f"Error in sample_user_followers: {str(e)}")
         return []
 
-async def sample_users_with_tweets_from_username(username: str, save_sample: bool = True) -> UserSampleResponse:
+async def sample_users_with_tweets_from_username(username: str, save_sample: bool = False) -> UserSampleResponse:
     """
     Given a username whose followers you want to sample, construct a list of the follower profiles complete with tweets.
     Optionally dump the result to a JSON file.
