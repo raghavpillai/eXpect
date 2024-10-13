@@ -9,273 +9,26 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@/app/components/modal";
-import {
-  Avatar,
-  Box,
-  Button,
-  ButtonGroup,
-  CircularProgress,
-  CircularProgressLabel,
-  Grid,
-  HStack,
-  Image,
-  Text,
-  Tooltip,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Button, Grid, HStack, Text, VStack } from "@chakra-ui/react";
 import { useProfileStore } from "@utils/stores/profile";
 import { useSearchQueryStore } from "@utils/stores/search";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { IoArrowBack, IoRefresh } from "react-icons/io5";
-import DistributionGraph from "./components/distribution-graph";
+import { IoArrowBack } from "react-icons/io5";
+import BackgroundImage from "./components/background-image";
+import Graphs from "./components/graphs";
 import LoadingModal from "./components/loading-modal";
-import SwarmGraph from "./components/swarm-graph";
+import QueryPost from "./components/query-post";
+import UserPost from "./components/user-post";
 
 // Create motion components
-const MotionBox = motion(Box);
-const MotionHStack = motion(HStack);
-const MotionVStack = motion(VStack);
-const MotionButton = motion(Button);
+const MotionBox = motion(Box as any);
+const MotionHStack = motion(HStack as any);
+const MotionVStack = motion(VStack as any);
+const MotionButton = motion(Button as any);
 
-interface UserPostProps {
-  name: string;
-  handle: string;
-  reply: string;
-  sentiment: number;
-  profilePicture: string;
-  explanation: string;
-}
-
-const UserPost = ({
-  name,
-  handle,
-  reply,
-  sentiment,
-  profilePicture,
-  explanation,
-}: UserPostProps) => {
-  const getColor = (sentiment: number) => {
-    const r = Math.round(255 * (1 - sentiment));
-    const g = Math.round(255 * sentiment);
-    return `rgba(${r}, ${g}, 0, 1)`;
-  };
-
-  return (
-    <HStack
-      alignItems="flex-start"
-      p={4}
-      bg="rgba(255,255,255,0.05)"
-      borderRadius="xl"
-      border="1px solid rgba(255,255,255,0.2)"
-      w="full"
-      maxW="500px"
-      justify="space-between"
-      backdropFilter="blur(5px)"
-    >
-      <HStack>
-        <Avatar name={handle} size="sm" mr={2} src={profilePicture} />
-        <VStack align="flex-start">
-          <HStack spacing={2}>
-            <HStack spacing={1}>
-              <Text fontSize="sm" fontWeight="bold">
-                {name}
-              </Text>
-              <Image src="verified.svg" alt="verified" w={4} h={4} />
-            </HStack>
-            <Text fontSize="xs" color="gray.400">
-              @{handle}
-            </Text>
-          </HStack>
-          <Text fontSize="sm">{reply}</Text>
-        </VStack>
-      </HStack>
-      <Tooltip label={explanation}>
-        <CircularProgress
-          value={sentiment * 100}
-          color={getColor(sentiment)}
-          trackColor="rgba(150,150,150,0.2)"
-          size="40px"
-        >
-          <CircularProgressLabel color="white" fontSize="3xs">
-            {Math.round(sentiment * 100)}%
-          </CircularProgressLabel>
-        </CircularProgress>
-      </Tooltip>
-    </HStack>
-  );
-};
-
-interface QueryPostProps {
-  name: string;
-  handle: string;
-  content: string;
-}
-
-const QueryPost = ({ name, handle, content }: QueryPostProps) => {
-  return (
-    <HStack
-      alignItems="flex-start"
-      p={4}
-      bg="rgba(255,255,255,0.05)"
-      borderRadius="xl"
-      border="1px solid rgba(255,255,255,0.2)"
-      w="full"
-      maxW="500px"
-      backdropFilter="blur(5px)"
-    >
-      <Avatar name={handle} size="sm" mr={2} />
-      <VStack align="flex-start">
-        <HStack spacing={2}>
-          <HStack spacing={1}>
-            <Text fontSize="sm" fontWeight="bold">
-              {name}
-            </Text>
-            <Image src="verified.svg" alt="verified" w={4} h={4} />
-          </HStack>
-          <Text fontSize="xs" color="gray.400">
-            {handle}
-          </Text>
-        </HStack>
-        <Text fontSize="sm">{content}</Text>
-      </VStack>
-    </HStack>
-  );
-};
-
-interface GraphsProps {
-  posts: any;
-  startScore: number | null;
-  endScore: number | null;
-  setStartScore: (score: number | null) => void;
-  setEndScore: (score: number | null) => void;
-}
-
-const Graphs = ({
-  posts,
-  startScore,
-  endScore,
-  setStartScore,
-  setEndScore,
-}: GraphsProps) => {
-  const [selectedGraph, setSelectedGraph] = useState("distribution");
-
-  const resetScores = () => {
-    setStartScore(null);
-    setEndScore(null);
-  };
-
-  return (
-    <VStack w="full" h="50vh">
-      <HStack w="full" justify="space-between">
-        <HStack px={4} spacing={4}>
-          <Button
-            size="xs"
-            bg="rgba(255,255,255,0.4)"
-            onClick={resetScores}
-            _hover={{ bg: "rgba(255,255,255,0.6)" }}
-            borderRadius="full"
-            leftIcon={<IoRefresh fontSize="0.9rem" />}
-          >
-            Reset
-          </Button>
-          <Text
-            fontSize="xs"
-            color="gray.400"
-            display={startScore && !endScore ? "block" : "none"}
-          >
-            Sampling starting {startScore}
-          </Text>
-
-          <Text
-            fontSize="xs"
-            color="gray.400"
-            display={startScore && endScore ? "block" : "none"}
-          >
-            Sampling between {startScore} and {endScore}
-          </Text>
-        </HStack>
-
-        <ButtonGroup isAttached>
-          <Button
-            size="xs"
-            variant={selectedGraph === "distribution" ? "solid" : "outline"}
-            onClick={() => setSelectedGraph("distribution")}
-            bg={
-              selectedGraph === "distribution"
-                ? "rgba(255,255,255,0.2)"
-                : "transparent"
-            }
-          >
-            Distribution
-          </Button>
-          <Button
-            size="xs"
-            variant={selectedGraph === "swarm" ? "solid" : "outline"}
-            onClick={() => setSelectedGraph("swarm")}
-            bg={
-              selectedGraph === "swarm"
-                ? "rgba(255,255,255,0.2)"
-                : "transparent"
-            }
-          >
-            Quantity
-          </Button>
-        </ButtonGroup>
-      </HStack>
-      <Box w="full" h="full">
-        {selectedGraph === "distribution" && (
-          <DistributionGraph
-            posts={posts}
-            startScore={startScore}
-            endScore={endScore}
-            setStartScore={setStartScore}
-            setEndScore={setEndScore}
-          />
-        )}
-        {selectedGraph === "swarm" && (
-          <SwarmGraph
-            posts={posts}
-            startScore={startScore}
-            endScore={endScore}
-            setStartScore={setStartScore}
-            setEndScore={setEndScore}
-          />
-        )}
-      </Box>
-    </VStack>
-  );
-};
-
-const BackgroundImage = () => {
-  return (
-    <Box
-      position="absolute"
-      top={0}
-      right={0}
-      w="100%"
-      height="100%"
-      // height="300px"
-      zIndex={-1}
-      backgroundImage="url('/bg-3.png')"
-      backgroundSize="cover"
-      backgroundPosition="center top"
-      _after={{
-        content: '""',
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background:
-          "linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,1))",
-      }}
-    />
-  );
-};
-
-const AnimatedUserPost = motion(UserPost);
+const AnimatedUserPost = motion(UserPost as any);
 
 export default function DashPage() {
   const [dataLoading, setDataLoading] = useState(true);
@@ -292,6 +45,10 @@ export default function DashPage() {
   const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
+    if (!handle || !searchQuery) {
+      router.push("/search");
+    }
+
     if (hasInitialized.current) {
       return;
     }
@@ -312,11 +69,13 @@ export default function DashPage() {
 
         // Stream data
         // Ethan TODO: render as it streams in
-        if (reader)
+        if (reader) {
           while (true) {
             const { value, done }: ReadableStreamReadResult<Uint8Array> =
               await reader.read();
-            if (done) break;
+            if (done) {
+              break;
+            }
             if (value) {
               buffer += decoder.decode(value, { stream: true });
               let lines = buffer.split("\n");
@@ -336,6 +95,7 @@ export default function DashPage() {
               }
             }
           }
+        }
 
         // Process any remaining data in buffer
         if (buffer.trim()) {
@@ -354,25 +114,31 @@ export default function DashPage() {
     };
 
     handleSendQuery();
-
-    // setTimeout(() => {
-    //   setDataLoading(false);
-    // }, 3000);
-  }, []);
-
-  console.log("now we have all", posts);
+  }, [handle, searchQuery]);
 
   const getDistributedPosts = (posts: any[], count: number) => {
     const filteredPosts = posts.filter((post) => {
-      if (startScore === null || endScore === null) return true;
+      if (startScore === null || endScore === null) {
+        return true;
+      }
       return (
-        post.sentiment >= startScore / 100 && post.sentiment <= endScore / 100
+        post.response.sentiment >= startScore / 100 &&
+        post.response.sentiment <= endScore / 100
       );
     });
 
-    if (filteredPosts.length <= count) return filteredPosts;
+    console.log(
+      "filteredPosts for start and end ",
+      startScore,
+      endScore,
+      filteredPosts
+    );
 
-    filteredPosts.sort((a, b) => a.sentiment - b.sentiment);
+    if (filteredPosts.length <= count) {
+      return filteredPosts;
+    }
+
+    filteredPosts.sort((a, b) => a.response.sentiment - b.response.sentiment);
     const step = (filteredPosts.length - 1) / (count - 1);
     const distributedPosts = [];
 
@@ -380,16 +146,21 @@ export default function DashPage() {
       const index = Math.round(i * step);
       distributedPosts.push(filteredPosts[index]);
     }
+    console.log(
+      "distributedPosts for start and end ",
+      startScore,
+      endScore,
+      distributedPosts
+    );
 
     return distributedPosts;
   };
-
-  const distributedPosts = getDistributedPosts(posts, 10);
 
   return (
     <MotionVStack
       w="full"
       h="full"
+      minH="100vh"
       color="white"
       p={8}
       display="flex"
@@ -495,7 +266,7 @@ export default function DashPage() {
             justifyContent="center"
             alignItems="center"
           >
-            {distributedPosts.map((post, index) => (
+            {getDistributedPosts(posts, 10).map((post, index) => (
               <MotionBox
                 key={index}
                 display="flex"

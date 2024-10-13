@@ -8,7 +8,7 @@ from typing import Any
 import httpx
 import uvicorn
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from src.config import GROK_API_KEY_CYCLE, GROK_API_KEYS, GROK_LLM_API_URL
@@ -129,8 +129,12 @@ async def impersonate_reply(
 
 @limiter.limit("3/minute")
 @app.get("/user/{username}")
-async def get_user(username: str) -> dict[str, Any]:
+async def get_user(request: Request, username: str) -> dict[str, Any]:
     """Get user information by username."""
+    username = request.path_params.get("username")
+    if not username:
+        raise HTTPException(status_code=400, detail="Missing username query parameter")
+
     try:
         user = await get_user_by_username(username)
         if user is None:
@@ -143,8 +147,16 @@ async def get_user(username: str) -> dict[str, Any]:
 
 @limiter.limit("2/minute")
 @app.get("/sample_x")
-async def sample_x(username: str, sampling_text: str) -> StreamingResponse:
+async def sample_x(request: Request) -> StreamingResponse:
     """Impersonate replies of a sample set of the username's followers."""
+    username = request.query_params.get("username")
+    sampling_text = request.query_params.get("sampling_text")
+
+    if not username or not sampling_text:
+        raise HTTPException(
+            status_code=400, detail="Missing username or sampling_text query parameters"
+        )
+
     try:
         sample_response: UserSampleResponse = (
             await sample_users_with_tweets_from_username(username)
