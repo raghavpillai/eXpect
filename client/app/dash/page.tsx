@@ -66,6 +66,8 @@ export default function DashPage() {
 
     const handleSendQuery = async () => {
       try {
+        console.log("Handle", handle);
+        console.log("Search Query", searchQuery);
         const url = `${process.env.NEXT_PUBLIC_API_URL}/sample_x?username=${handle}&sampling_text=${searchQuery}`;
         const response = await fetch(url);
 
@@ -205,6 +207,7 @@ export default function DashPage() {
       minH="100vh"
       color="white"
       p={8}
+      pt={3}
       display="flex"
       position="relative"
       spacing={0}
@@ -261,6 +264,7 @@ export default function DashPage() {
             w="20px"
             h="20px"
             filter="invert(100%)"
+            mt={1.5}
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
