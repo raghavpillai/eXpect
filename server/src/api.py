@@ -12,15 +12,10 @@ import asyncio
 import ast
 import tracemalloc
 
-"""
-FASTAPI APP
-"""
-
-load_dotenv('.env.local')
+load_dotenv('.env')
 
 app: FastAPI = FastAPI(title="API", version="1.0.0")
 
-# Middlewares
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -29,14 +24,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Constants
 GROK_API_KEY = os.getenv("GROK_API_KEY")
 GROK_LLM_API_URL = os.getenv("GROK_LLM_API_URL")
 
 if not GROK_API_KEY or not GROK_LLM_API_URL:
     raise ValueError("GROK_API_KEY and GROK_LLM_API_URL must be set in environment variables.")
 
-# Helper functions
 def parse_input(json_input):
     """
     Parse the JSON input and extract necessary fields.
@@ -152,10 +145,6 @@ IMPERSONATED JSON RESPONSE:
             status_code=500,
             detail=f"Grok LLM API Response Error: {ve}"
         )
-
-"""
-ENDPOINTS
-"""
 
 @app.get("/")
 async def root():
