@@ -15,8 +15,9 @@ async def call_api_with_retry(url, params=None, headers=None, printLimits=False)
             headers = {}
 
         async with httpx.AsyncClient() as client:
-            for bearer_token in Config.BEARER_TOKENS:
+            for i in range(len(Config.BEARER_TOKENS)):
                 try:
+                    bearer_token = Config.BEARER_TOKENS[i]
                     headers['Authorization'] = f'Bearer {bearer_token}'
                     
                     response = await client.get(url, headers=headers, params=params)
@@ -29,6 +30,7 @@ async def call_api_with_retry(url, params=None, headers=None, printLimits=False)
                     elif response.status_code == 429:
                         print_rate_limits(response.headers)
                         print("RATE LIMIT EXCEEDED. TRYING NEXT TOKEN!")
+                        Config.BEARER_TOKENS = Config.BEARER_TOKENS[i+1:] + Config.BEARER_TOKENS[:i+1]  # shift the 429'd token to the end of the list
                     else:
                         print(f"Error: {response.status_code}")
                         print(response.text)
