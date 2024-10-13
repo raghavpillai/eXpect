@@ -191,7 +191,7 @@ export default function SearchPage() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  Analyze
+                  Explore
                 </MotionButton>
               </HStack>
             </VStack>
