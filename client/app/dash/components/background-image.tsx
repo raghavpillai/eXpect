@@ -9,22 +9,21 @@ export default function BackgroundImage() {
       top={0}
       right={0}
       w="100%"
-      height="100%"
-      // height="300px"
-      zIndex={-1}
-      backgroundImage="url('/bg-3.png')"
-      backgroundSize="cover"
-      backgroundPosition="center top"
-      _after={{
-        content: '""',
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background:
-          "linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,1))",
-      }}
-    />
+      height="100vh"
+      bg="linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(15,15,15,1))"
+    >
+      <Box
+        position="absolute"
+        top={0}
+        right={0}
+        w="100%"
+        height="100vh"
+        // height="300px"
+        zIndex={-1}
+        backgroundImage="url('/bg-3.png')"
+        backgroundSize="cover"
+        backgroundPosition="center top"
+      />
+    </Box>
   );
 }
