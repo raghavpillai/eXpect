@@ -225,6 +225,6 @@ if __name__ == "__main__":
     # test = asyncio.run(impersonate_reply("Ray", "I love Trump", "Texas", ["Trump is the best! #MAGA", "I hate democrats"], "Kamala harris will win!"))
     # print(test.model_dump())
 
-    test = asyncio.run(sample_x('iporollo', "I love kamala harris"))
+    test = asyncio.run(sample_x('aheze0', "I love kamala harris"))
     response_content = test.body.decode('utf-8')
     print(json.loads(response_content))
