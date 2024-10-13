@@ -184,14 +184,25 @@ export default function DistributionGraph({ posts }: { posts: Post[] }) {
         sliceTooltip={({ slice }) => (
           <div
             style={{
-              background: "white",
-              padding: "9px 12px",
-              border: "1px solid #ccc",
+              background: "rgba(0,0,0,0.4)",
+              padding: "6px 8px",
+              border: "1px solid rgba(255,255,255,0.2)",
+              borderRadius: "6px",
+              backdropFilter: "blur(3px)",
+              fontSize: "10px",
             }}
           >
-            <strong>x: {slice.points[0].data.xFormatted}</strong>
-            {startSlice && <div>Start: {startSlice.toFixed(2)}</div>}
-            {endSlice && <div>End: {endSlice.toFixed(2)}</div>}
+            <strong style={{ fontSize: "11px" }}>
+              {slice.points[0].data.xFormatted}
+            </strong>
+            {startSlice && (
+              <div style={{ fontSize: "9px" }}>
+                Start: {startSlice.toFixed(0)}
+              </div>
+            )}
+            {endSlice && (
+              <div style={{ fontSize: "9px" }}>End: {endSlice.toFixed(0)}</div>
+            )}
           </div>
         )}
         onClick={handleSlice}
@@ -205,14 +216,22 @@ export default function DistributionGraph({ posts }: { posts: Post[] }) {
           startSlice && {
             axis: "x",
             value: startSlice,
-            lineStyle: { stroke: "#FFFFFF", strokeWidth: 2 },
+            lineStyle: {
+              stroke: "#808080",
+              strokeWidth: 1,
+              strokeDasharray: "5,5",
+            },
             legend: "Start",
             legendOrientation: "vertical",
           },
           endSlice && {
             axis: "x",
             value: endSlice,
-            lineStyle: { stroke: "#FFFFFF", strokeWidth: 2 },
+            lineStyle: {
+              stroke: "#808080",
+              strokeWidth: 1,
+              strokeDasharray: "5,5",
+            },
             legend: "End",
             legendOrientation: "vertical",
           },
