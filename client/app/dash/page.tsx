@@ -38,7 +38,7 @@ export default function DashPage() {
   const [endScore, setEndScore] = useState<number | null>(null);
   const [isAllPostsModalOpen, setIsAllPostsModalOpen] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
-  const { handle } = useProfileStore();
+  const { handle, name, profilePicture } = useProfileStore();
   const { searchQuery } = useSearchQueryStore();
   const hasInitialized = useRef(false);
 
@@ -156,6 +156,38 @@ export default function DashPage() {
     return distributedPosts;
   };
 
+  if (dataLoading) {
+    return (
+      <MotionVStack
+        w="full"
+        h="full"
+        minH="100vh"
+        color="white"
+        p={8}
+        display="flex"
+        position="relative"
+        spacing={0}
+        zIndex={20}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <LoadingModal isOpen={dataLoading && data.length === 0} />
+        <Box
+          position="absolute"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          alignItems="center"
+          justifyContent="center"
+        >
+          <BackgroundImage />
+        </Box>
+      </MotionVStack>
+    );
+  }
+
   return (
     <MotionVStack
       w="full"
@@ -203,7 +235,12 @@ export default function DashPage() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <QueryPost name="User" handle={handle} content={searchQuery} />
+        <QueryPost
+          name={name}
+          handle={handle}
+          content={searchQuery}
+          pfp={profilePicture}
+        />
       </MotionBox>
       <MotionBox
         minH="50vh"

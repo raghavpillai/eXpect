@@ -6,9 +6,15 @@ interface QueryPostProps {
   name: string;
   handle: string;
   content: string;
+  pfp?: string;
 }
 
-export default function QueryPost({ name, handle, content }: QueryPostProps) {
+export default function QueryPost({
+  name,
+  handle,
+  content,
+  pfp,
+}: QueryPostProps) {
   return (
     <HStack
       alignItems="flex-start"
@@ -20,7 +26,11 @@ export default function QueryPost({ name, handle, content }: QueryPostProps) {
       maxW="500px"
       backdropFilter="blur(5px)"
     >
-      <Avatar name={handle} size="sm" mr={2} />
+      {pfp ? (
+        <Avatar name={handle} size="sm" mr={2} src={pfp} />
+      ) : (
+        <Avatar name={handle} size="sm" mr={2} />
+      )}
       <VStack align="flex-start">
         <HStack spacing={2}>
           <HStack spacing={1}>
