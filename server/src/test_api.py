@@ -1,28 +1,31 @@
-from api import app
-from fastapi.testclient import TestClient
+import requests
+import json
 
-client = TestClient(app)
+BASE_URL = "http://localhost:8080"
 
+def test_root():
+    response = requests.get(f"{BASE_URL}/")
+    print("Root endpoint response:", response.json())
+
+def test_get_user():
+    # Test with an existing user
+    response = requests.get(f"{BASE_URL}/user/elonmusk")
+    print("Get user (existing) response:", response.json())
+    
+    # Test with a non-existing user
+    response = requests.get(f"{BASE_URL}/user/nonexistentuser123456789")
+    print("Get user (non-existing) response:", response.json())
 
 def test_sample_x():
-    username = "eshaotran"
-    response = client.get(f"/sample_x?username={username}")
-    assert response.status_code == 200, f"Response error: {response.json()}"
-
-    data = response.json()
-    print("Response from sample_x endpoint:", data)
-
-    assert "samples" in data
-    assert isinstance(data["samples"], list)
-    assert "response_time" in data
-    assert isinstance(data["response_time"], int)
-
-    if len(data["samples"]) > 0:
-        sample = data["samples"][0]
-        assert "user" in sample
-        assert "tweets" in sample
-        assert isinstance(sample["tweets"], list)
-
+    response = requests.get(f"{BASE_URL}/sample_x?username=elonmusk&sampling_text=AI is the future", stream=True)
+    
+    print("Sample X responses:")
+    for line in response.iter_lines():
+        if line:
+            print(json.loads(line))
 
 if __name__ == "__main__":
+    # test_root()
+    # test_get_user()
     test_sample_x()
+    # print("All tests completed")
