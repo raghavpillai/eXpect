@@ -14,7 +14,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-// import LoadingModal from "./components/loading-modal";
+import LoadingModal from "./components/loading-modal";
 import {
   Modal,
   ModalBody,
@@ -68,7 +68,7 @@ const UserPost = ({ name, handle, reply, sentiment }: UserPostProps) => {
               <Image src="verified.svg" alt="verified" w={4} h={4} />
             </HStack>
             <Text fontSize="xs" color="gray.400">
-              {handle}
+              @{handle}
             </Text>
           </HStack>
           <Text fontSize="sm">{reply}</Text>
@@ -263,6 +263,7 @@ export default function DashPage() {
   const [startScore, setStartScore] = useState<number | null>(null);
   const [endScore, setEndScore] = useState<number | null>(null);
   const [isAllPostsModalOpen, setIsAllPostsModalOpen] = useState(false);
+  const [posts, setPosts] = useState<any[]>([]);
   const { handle } = useProfileStore();
   const { searchQuery } = useSearchQueryStore();
   const hasInitialized = useRef(false);
@@ -304,6 +305,7 @@ export default function DashPage() {
                     const parsed = JSON.parse(line);
                     console.log('new line', parsed)
                     setData((prevData) => [...prevData, parsed]);
+                    setPosts((prevData) => [...prevData, parsed]);
                   } catch (e) {
                     console.error("Error parsing JSON:", e);
                   }
@@ -335,7 +337,7 @@ export default function DashPage() {
     // }, 3000);
   }, []);
 
-  const posts = data;
+  console.log('now we have all', posts)
 
   const getDistributedPosts = (posts: any[], count: number) => {
     const filteredPosts = posts.filter((post) => {
@@ -372,6 +374,7 @@ export default function DashPage() {
       spacing={0}
       zIndex={20}
     >
+      <LoadingModal isOpen={data.length === 0} />
       <Box
         position="absolute"
         top={0}
@@ -395,7 +398,7 @@ export default function DashPage() {
       >
         Back
       </Button>
-      <QueryPost name="Rag Pil" handle={handle} content={searchQuery} />
+      <QueryPost name="User" handle={handle} content={searchQuery} />
       <Box minH="50vh" w="full" mt={6}>
         <Graphs
           posts={posts}
@@ -439,10 +442,10 @@ export default function DashPage() {
             {distributedPosts.map((post, index) => (
               <Box key={index} display="flex" justifyContent="center">
                 <UserPost
-                  name={post.name}
-                  handle={post.handle}
-                  reply={post.reply}
-                  sentiment={post.sentiment}
+                  name={post.user.name}
+                  handle={post.user.username}
+                  reply={post.response.response}
+                  sentiment={post.response.sentiment}
                 />
               </Box>
             ))}
@@ -470,10 +473,10 @@ export default function DashPage() {
               {posts.map((post, index) => (
                 <Box key={index} display="flex" justifyContent="center">
                   <UserPost
-                    name={post.name}
-                    handle={post.handle}
-                    reply={post.reply}
-                    sentiment={post.sentiment}
+                    name={post.user.name}
+                    handle={post.user.username}
+                    reply={post.response.response}
+                    sentiment={post.response.sentiment}
                   />
                 </Box>
               ))}
