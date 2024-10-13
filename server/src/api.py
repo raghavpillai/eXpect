@@ -11,7 +11,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
-from x_functions import sample_users_with_tweets_from_username
+from x_functions import sample_users_with_tweets_from_username, get_user_by_username
 from x_models import UserWithTweets
 
 load_dotenv(".env")
@@ -193,6 +193,21 @@ IMPERSONATED JSON RESPONSE:
 @app.get("/")
 async def root():
     return JSONResponse({"message": "API"})
+
+
+@app.get("/user/{username}")
+async def get_user(username: str):
+    """
+    Get user information by username.
+    """
+    try:
+        user = await get_user_by_username(username)
+        if user is None:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        return user
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching user: {str(e)}")
 
 
 @app.get("/sample_x")
