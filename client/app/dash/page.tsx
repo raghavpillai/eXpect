@@ -30,7 +30,6 @@ import { useRouter } from "next/navigation";
 import { IoArrowBack, IoRefresh } from "react-icons/io5";
 import DistributionGraph from "./components/distribution-graph";
 import SwarmGraph from "./components/swarm-graph";
-import axios from "axios";
 
 interface UserPostProps {
   name: string;
@@ -247,29 +246,48 @@ export default async function DashPage() {
 
     const handleSendQuery = async () => {
       try {
-        const response = await axios.get('/sample_x', {
-          params: {
-            username: handle,
-            sampling_text: searchQuery,
-          },
-          responseType: 'stream',
-        });
+        const url = `/sample_x?username=${encodeURIComponent(handle)}&sampling_text=${encodeURIComponent(searchQuery)}`;
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
   
-        const reader = response.data.getReader();
-        const decoder = new TextDecoder('utf-8');
-        let result = [];
-        let chunk;
-  
-        while (!(chunk = await reader.read()).done) {
-          const lines = decoder.decode(chunk.value, { stream: true }).split('\n');
-          for (const line of lines) {
-            if (line.trim()) {
-              result.push(JSON.parse(line));
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        if (reader)
+          while (true) {
+            const { value, done }: ReadableStreamReadResult<Uint8Array> = await reader.read();
+            if (done) break;
+            if (value) {
+              buffer += decoder.decode(value, { stream: true });
+              let lines = buffer.split('\n');
+              buffer = lines.pop() ?? ''; // Save the last incomplete line
+              for (const line of lines) {
+                if (line.trim()) {
+                  try {
+                    const parsed = JSON.parse(line);
+                    setData((prevData) => [...prevData, parsed]);
+                  } catch (e) {
+                    console.error('Error parsing JSON:', e);
+                  }
+                }
+              }
             }
+          }
+
+        // Process any remaining data in buffer
+        if (buffer.trim()) {
+          try {
+            const parsed = JSON.parse(buffer);
+            setData((prevData) => [...prevData, parsed]);
+          } catch (e) {
+            console.error('Error parsing JSON:', e);
           }
         }
 
-        setData(result)
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -279,9 +297,9 @@ export default async function DashPage() {
 
     handleSendQuery();
 
-    setTimeout(() => {
-      setDataLoading(false);
-    }, 3000);
+    // setTimeout(() => {
+    //   setDataLoading(false);
+    // }, 3000);
   }, []);
 
   const posts = data;
