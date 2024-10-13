@@ -75,13 +75,11 @@ To properly impersonate them, here is some information on them:
 # YOUR TASK
 You will read and simulate a reply to an input post.
 
-Based on the person's information above, you will response to this post with JSON with the following keys:
+Based on the person's information above, you will response to this post with JSON in this schema:
 
-1. explanation: the explanation of the person's response to the text.
-2. response: a response tweet, as the user, to the input text.
-3. agree: a boolean flag, true or false, of if the user supports the text or not. 
+{json.dumps(GrokImpersonationReply.model_json_schema(), indent=2)} 
 
-Output NOTHING else except for this JSON.
+Output NOTHING else except for this JSON!
         """
     )
 
