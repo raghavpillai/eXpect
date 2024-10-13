@@ -20,8 +20,8 @@ export default function TitleSection() {
       >
         <MotionText
           fontSize="8xl"
-          initial={{ x: -20 }}
-          animate={{ x: 0 }}
+          initial={{ y: -20 }}
+          animate={{ y: 0 }}
           transition={{ delay: 0.2 }}
         >
           e
@@ -34,12 +34,12 @@ export default function TitleSection() {
           mt={5}
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
+          transition={{ delay: 0.4 }}
         />
         <MotionText
           fontSize="8xl"
-          initial={{ x: 20 }}
-          animate={{ x: 0 }}
+          initial={{ y: 20 }}
+          animate={{ y: 0 }}
           transition={{ delay: 0.6 }}
         >
           pect

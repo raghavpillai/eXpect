@@ -53,6 +53,9 @@ export default function UserPost({
           mr={2}
           src={profilePicture}
           loading="lazy"
+          onError={() => {
+            console.log("error");
+          }}
         />
         <VStack align="flex-start">
           <HStack spacing={2}>
