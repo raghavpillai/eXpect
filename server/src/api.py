@@ -17,7 +17,7 @@ from src.utils.functions import (
     get_user_by_username,
     sample_users_with_tweets_from_username,
 )
-from src.utils.models import UserWithTweets
+from src.utils.models import UserSampleResponse, UserWithTweets
 
 load_dotenv(".env")
 
@@ -196,7 +196,10 @@ async def get_user(username: str) -> dict[str, Any]:
 async def sample_x(username: str, sampling_text: str) -> StreamingResponse:
     """Impersonate replies of a sample set of the username's followers."""
     try:
-        sample_response = await sample_users_with_tweets_from_username(username)
+        sample_response: UserSampleResponse = (
+            await sample_users_with_tweets_from_username(username)
+        )
+        print(sample_response)
 
         async def process_user(user_with_tweets: UserWithTweets) -> dict[str, Any]:
             """Process a single user and generate a response."""
@@ -221,6 +224,7 @@ async def sample_x(username: str, sampling_text: str) -> StreamingResponse:
             tasks = [process_user(user) for user in sample_response.samples]
             for result in asyncio.as_completed(tasks):
                 processed_result = await result
+                print(processed_result)
                 if processed_result:
                     yield json.dumps(processed_result) + "\n"
 
