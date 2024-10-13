@@ -256,7 +256,7 @@ const BackgroundImage = () => {
   );
 };
 
-export default async function DashPage() {
+export default function DashPage() {
   const [dataLoading, setDataLoading] = useState(true);
   const router = useRouter();
 
@@ -277,9 +277,8 @@ export default async function DashPage() {
 
     const handleSendQuery = async () => {
       try {
-        const url = `/sample_x?username=${encodeURIComponent(
-          handle
-        )}&sampling_text=${encodeURIComponent(searchQuery)}`;
+        const url = `http://localhost:8080/sample_x?username=${handle}&sampling_text=${searchQuery}`;
+        console.log("URL IS", url)
         const response = await fetch(url);
 
         if (!response.ok) {
@@ -303,6 +302,7 @@ export default async function DashPage() {
                 if (line.trim()) {
                   try {
                     const parsed = JSON.parse(line);
+                    console.log('new line', parsed)
                     setData((prevData) => [...prevData, parsed]);
                   } catch (e) {
                     console.error("Error parsing JSON:", e);
