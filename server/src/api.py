@@ -27,6 +27,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Round Robin - add in .env
 GROK_API_KEYS = [
     os.getenv("GROK_API_KEY_1"),
     os.getenv("GROK_API_KEY_2"),
@@ -86,35 +87,35 @@ async def impersonate_reply(
     Generate a simulated reply using Grok LLM API based on user information and post content. Cycles through Grok API keys until they're all rate limited!
     """
     sys_prompt = f"""
-You are impersonating {name}, a real human person.
-To properly impersonate this person, here is some information on them:
+        You are impersonating {name}, a real human person.
+        To properly impersonate this person, here is some information on them:
 
-# DESCRIPTION
-"{bio}"
+        # DESCRIPTION
+        "{bio}"
 
-# LOCATION
-"{location}"
+        # LOCATION
+        "{location}"
 
-# SAMPLE TWEETS
-{'\n'.join([f'- "{tweet}"' for tweet in sample_tweets])}
+        # SAMPLE TWEETS
+        {'\n'.join([f'- "{tweet}"' for tweet in sample_tweets])}
 
-# YOUR TASK
-You will read and simulate a reply to an input post, as the person described above! YOU MUST MATCH THE STYLE
-OF THE PERSON ABOVE AS MUCH AS POSSIBLE. MATCH THE STYLE OF THEIR POSTING IN THE IMPERSONATED RESPONSE.
+        # YOUR TASK
+        You will read and simulate a reply to an input post, as the person described above! YOU MUST MATCH THE STYLE
+        OF THE PERSON ABOVE AS MUCH AS POSSIBLE. MATCH THE STYLE OF THEIR POSTING IN THE IMPERSONATED RESPONSE.
 
-You will respond to this post AS THE PERSON, IN THEIR STYLE, with JSON in this schema:
+        You will respond to this post AS THE PERSON, IN THEIR STYLE, with JSON in this schema:
 
-{json.dumps(GrokImpersonationReply.model_json_schema(), indent=2)} 
+        {json.dumps(GrokImpersonationReply.model_json_schema(), indent=2)} 
 
-Output NOTHING else except for this JSON!
+        Output NOTHING else except for this JSON!
         """
 
     prompt = f"""
-INPUT POST:
-{post_content}
+        INPUT POST:
+        {post_content}
 
-IMPERSONATED JSON RESPONSE:
-    """
+        IMPERSONATED JSON RESPONSE:
+        """
 
     payload = {
         "messages": [

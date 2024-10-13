@@ -279,7 +279,6 @@ export default function DashPage() {
     const handleSendQuery = async () => {
       try {
         const url = `http://localhost:8080/sample_x?username=${handle}&sampling_text=${searchQuery}`;
-        console.log("URL IS", url)
         const response = await fetch(url);
 
         if (!response.ok) {
@@ -290,6 +289,8 @@ export default function DashPage() {
         const decoder = new TextDecoder();
         let buffer = "";
 
+        // Stream data
+        // Ethan TODO: render as it streams in
         if (reader)
           while (true) {
             const { value, done }: ReadableStreamReadResult<Uint8Array> =
