@@ -226,7 +226,7 @@ if __name__ == "__main__":
     # print(test.model_dump())
 
     async def test_sample_x():
-        response = await sample_x('cerebral_valley', "we need more homeless people in sf")
+        response = await sample_x('ibab', "openai is better than x ai")
         async for line in response.body_iterator:
             result = json.loads(line)
             print(result)

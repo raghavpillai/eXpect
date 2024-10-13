@@ -67,7 +67,12 @@ async def sample_user_followers(user_id: str, max_sample: int = Config.MAX_FOLLO
         intersect_users = [user for user in followers['data'] if user and 'id' in user and user['id'] in intersect_ids]
 
         if intersect_users:
-            return random.sample(intersect_users, min(len(intersect_users), max_sample))
+            sample = random.sample(intersect_users, min(len(intersect_users), max_sample))
+            if len(sample) < max_sample:
+                remaining_users = [user for user in followers['data'] if user not in intersect_users]
+                additional_sample = random.sample(remaining_users, min(len(remaining_users), max_sample - len(sample)))
+                sample.extend(additional_sample)
+            return sample
         else:
             return random.sample(followers['data'], min(len(followers['data']), max_sample))
     except Exception as e:
