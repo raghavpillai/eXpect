@@ -195,10 +195,13 @@ async def sample_x(username: str):
         raise HTTPException(status_code=500, detail=error_message)
 
 if __name__ == "__main__":
-    try:
-        tracemalloc.start()
-        uvicorn.run(
-            "src.api:app", host="0.0.0.0", port=8080, reload=True, lifespan="on"
-        )
-    except Exception as e:
-        print(f"Error: {e}")
+    # try:
+    #     tracemalloc.start()
+    #     uvicorn.run(
+    #         "src.api:app", host="0.0.0.0", port=8080, reload=True, lifespan="on"
+    #     )
+    # except Exception as e:
+    #     print(f"Error: {e}")
+
+    test = asyncio.run(generate_reply("Ray", "I love Trump", "Texas", ["Trump is the best! #MAGA", "I hate democrats"], "Kamala harris will win!"))
+    print(test)
