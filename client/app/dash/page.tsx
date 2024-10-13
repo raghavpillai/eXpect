@@ -332,11 +332,7 @@ export default async function DashPage() {
       >
         Back
       </Button>
-      <QueryPost
-        name="Rag Pil"
-        handle="@rag_pil"
-        content="This is amazing! I love this!"
-      />
+      <QueryPost name="Rag Pil" handle={handle} content={searchQuery} />
       <Box minH="50vh" w="full" mt={6}>
         <Graphs
           posts={posts}
