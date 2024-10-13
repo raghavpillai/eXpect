@@ -195,14 +195,6 @@ export default function DistributionGraph({ posts }: { posts: Post[] }) {
             <strong style={{ fontSize: "11px" }}>
               {slice.points[0].data.xFormatted}
             </strong>
-            {startSlice && (
-              <div style={{ fontSize: "9px" }}>
-                Start: {startSlice.toFixed(0)}
-              </div>
-            )}
-            {endSlice && (
-              <div style={{ fontSize: "9px" }}>End: {endSlice.toFixed(0)}</div>
-            )}
           </div>
         )}
         onClick={handleSlice}
