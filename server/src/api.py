@@ -98,9 +98,10 @@ To properly impersonate this person, here is some information on them:
 {'\n'.join([f'- "{tweet}"' for tweet in sample_tweets])}
 
 # YOUR TASK
-You will read and simulate a reply to an input post, as the person described above!
+You will read and simulate a reply to an input post, as the person described above! YOU MUST MATCH THE STYLE
+OF THE PERSON ABOVE AS MUCH AS POSSIBLE. MATCH THE STYLE OF THEIR POSTING IN THE IMPERSONATED RESPONSE.
 
-You will respond to this post as the person with JSON in this schema:
+You will respond to this post AS THE PERSON, IN THEIR STYLE, with JSON in this schema:
 
 {json.dumps(GrokImpersonationReply.model_json_schema(), indent=2)} 
 
@@ -119,7 +120,7 @@ IMPERSONATED JSON RESPONSE:
             {"role": "system", "content": sys_prompt},
             {"role": "user", "content": prompt},
         ],
-        "model": "grok-2-public",
+        "model": "grok-2-mini-public",
         "stream": False,
         "temperature": 0.9,
     }
@@ -248,7 +249,7 @@ if __name__ == "__main__":
     # print(test.model_dump())
 
     async def test_sample_x():
-        response = await sample_x("ibab", "openai is better than x ai")
+        response = await sample_x("raydelvecc", "openai is better than x ai")
         async for line in response.body_iterator:
             result = json.loads(line)
             print(result)
