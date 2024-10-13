@@ -60,7 +60,7 @@ def parse_input(json_input):
     return name, bio, sample_tweets, post_type
 
 class GrokImpersonationReply(BaseModel):
-    explanation: str = Field(..., description="The explanation of the person's impersonated response to the input post.")
+    explanation: str = Field(..., description="The explanation of the person's impersonated response to the input post. 1-2 sentences.")
     response: str = Field(..., description="Impersonated response tweet to the input post.")
     agree: bool = Field(..., description="A boolean flag indicating if the person supports the text or not. ALWAYS set to either true or false.")
     sentiment: float = Field(..., description="A sentiment score of the person's thoughts on the input post. 0 is disagree, 1 is agree.")
@@ -112,8 +112,9 @@ IMPERSONATED JSON RESPONSE:
                 "content": prompt
             }
         ],
-        'model': 'grok-2-mini-public',
-        'stream': False
+        'model': 'grok-2-public',
+        'stream': False,
+        'temperature': 0.9
     }
 
     for _ in range(len(GROK_API_KEYS)):
@@ -225,7 +226,7 @@ if __name__ == "__main__":
     # print(test.model_dump())
 
     async def test_sample_x():
-        response = await sample_x('aheze0', "I love kamala harris")
+        response = await sample_x('cerebral_valley', "we need more homeless people in sf")
         async for line in response.body_iterator:
             result = json.loads(line)
             print(result)
