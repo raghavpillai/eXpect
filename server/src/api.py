@@ -157,33 +157,6 @@ IMPERSONATED JSON RESPONSE:
 async def root():
     return JSONResponse({"message": "API"})
 
-@app.post("/generate_reply")
-async def generate_reply_endpoint(request: Request):
-    """
-    Endpoint to generate a reply using Grok LLM API.
-    
-    Expects JSON input with user data and post content.
-    """
-    try:
-        json_input = await request.json()
-        post_content = json_input.get("post_content", "").strip()
-
-        if not post_content:
-            raise HTTPException(status_code=400, detail="post_content is required.")
-
-        name, bio, sample_tweets, post_type = parse_input(json_input)
-
-        reply = await impersonate_reply(name, bio, None, sample_tweets, post_content)
-
-        return JSONResponse({"reply": reply})
-    except HTTPException as http_exc:
-        raise http_exc
-
-    except Exception as e:
-        traceback_str = ''.join(traceback.format_tb(e.__traceback__))
-        error_message = f"Error processing request: {e}\nTraceback: {traceback_str}"
-        raise HTTPException(status_code=500, detail=error_message)
-
 @app.get("/sample_x")
 async def sample_x(username: str, sampling_text: str):
     """
