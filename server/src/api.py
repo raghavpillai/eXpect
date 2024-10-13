@@ -137,11 +137,20 @@ IMPERSONATED JSON RESPONSE:
         validated_reply = GrokImpersonationReply(**reply_json)
         return validated_reply
     except httpx.HTTPStatusError as http_err:
-        error_content = response.text if response is not None else 'No response content'
-        raise HTTPException(
-            status_code=500,
-            detail=f"Grok LLM API HTTP Error: {http_err}\nResponse Content: {error_content}"
-        )
+        if http_err.response.status_code == 429:
+            remaining_requests = http_err.response.headers.get('x-ratelimit-remaining', 'Unknown')
+            reset_time = http_err.response.headers.get('x-ratelimit-reset', 'Unknown')
+            print(f"Rate limit exceeded. Remaining requests: {remaining_requests}, Reset time: {reset_time}")
+            raise HTTPException(
+                status_code=429,
+                detail=f"Rate limit exceeded. Please try again later. Remaining requests: {remaining_requests}, Reset time: {reset_time}"
+            )
+        else:
+            error_content = http_err.response.text if http_err.response is not None else 'No response content'
+            raise HTTPException(
+                status_code=500,
+                detail=f"Grok LLM API HTTP Error: {http_err}\nResponse Content: {error_content}"
+            )
     except httpx.RequestError as e:
         raise HTTPException(
             status_code=500,
@@ -181,7 +190,7 @@ async def sample_x(username: str, sampling_text: str):
                     "response": user_response.model_dump()
                 }
             except Exception as e:
-                pass
+                print(f"Error processing user {user_with_tweets.user.name}: {str(e)}")
 
         responses = await asyncio.gather(*[process_user(user) for user in sample_response.samples])
         
