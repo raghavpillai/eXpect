@@ -17,9 +17,9 @@ import { useState } from "react";
 import ProfileSection from "./components/profile-section";
 import TitleSection from "./components/title-section";
 
-const MotionBox = motion(Box);
-const MotionVStack = motion(VStack);
-const MotionButton = motion(Button);
+const MotionBox = motion(Box as any);
+const MotionVStack = motion(VStack as any);
+const MotionButton = motion(Button as any);
 
 const BackgroundImage = () => {
   return (
