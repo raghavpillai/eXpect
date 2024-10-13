@@ -10,8 +10,8 @@ class Config:
         os.getenv('X_BEARER_TOKEN_3'),
         os.getenv('X_BEARER_TOKEN_4')
     ]
-    MAX_TWEETS = 50
-    MAX_FOLLOWERS = 250
-    MAX_FOLLOWING = 250
+    MAX_TWEETS = 75
+    MAX_FOLLOWERS = 150
+    MAX_FOLLOWING = 150
     MAX_FOLLOWER_SAMPLE = 50
     JSON_BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))  # path for JSON files is in /xai-hackathon/server/*.json
