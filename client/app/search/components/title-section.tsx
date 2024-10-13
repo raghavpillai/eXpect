@@ -1,9 +1,9 @@
 import { HStack, Image, Text, VStack } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 
-const MotionText = motion(Text);
-const MotionImage = motion(Image);
-const MotionHStack = motion(HStack);
+const MotionText = motion(Text as any);
+const MotionImage = motion(Image as any);
+const MotionHStack = motion(HStack as any);
 
 export default function TitleSection() {
   const words = ["Seek", "Ground", "Truth"];

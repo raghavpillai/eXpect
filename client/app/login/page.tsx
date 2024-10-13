@@ -15,12 +15,12 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const MotionBox = motion(Box);
-const MotionVStack = motion(VStack);
-const MotionText = motion(Text);
-const MotionImage = motion(Image);
-const MotionInput = motion(Input);
-const MotionButton = motion(Button);
+const MotionBox = motion(Box as any);
+const MotionVStack = motion(VStack as any);
+const MotionText = motion(Text as any);
+const MotionImage = motion(Image as any);
+const MotionInput = motion(Input as any);
+const MotionButton = motion(Button as any);
 
 export default function LoginPage() {
   const [tempHandle, setTempHandle] = useState("");
