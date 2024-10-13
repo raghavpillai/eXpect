@@ -1,12 +1,12 @@
 import httpx
-from config import (
+from src.config import (
     BEARER_TOKENS,
     MAX_FOLLOWERS,
     MAX_FOLLOWING,
     MAX_TWEETS,
 )
 from src.database import Database
-from src.utils import print_rate_limits
+from src.utils.utils import print_rate_limits
 
 
 async def call_api_with_retry(url, params=None, headers=None, printLimits=False):
