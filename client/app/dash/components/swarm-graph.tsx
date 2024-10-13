@@ -43,6 +43,15 @@ export default function SwarmGraph({
 
   return (
     <Box h="full" w="full" position="relative">
+      <Box
+        position="absolute"
+        top="0"
+        left="40px"
+        right="10px"
+        bottom="30px"
+        backdropFilter="blur(10px)"
+        zIndex="0"
+      />
       <ResponsiveSwarmPlot
         data={data}
         groups={[""]}
@@ -155,7 +164,7 @@ export default function SwarmGraph({
           left={`${Math.min(startScore, endScore)}%`}
           width={`${Math.abs(endScore - startScore)}%`}
           bg="rgba(255, 255, 255, 0.1)"
-          zIndex="1"
+          zIndex="2"
         />
       )}
       {startScore !== null && (
@@ -166,7 +175,7 @@ export default function SwarmGraph({
           left={`${startScore}%`}
           width="2px"
           bg="rgba(255, 255, 255, 0.5)"
-          zIndex="2"
+          zIndex="3"
         />
       )}
       {endScore !== null && (
@@ -177,7 +186,7 @@ export default function SwarmGraph({
           left={`${endScore}%`}
           width="2px"
           bg="rgba(255, 255, 255, 0.5)"
-          zIndex="2"
+          zIndex="3"
         />
       )}
     </Box>

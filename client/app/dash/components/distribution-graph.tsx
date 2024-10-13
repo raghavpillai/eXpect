@@ -101,7 +101,16 @@ export default function DistributionGraph({
   };
 
   return (
-    <Box h="full" w="full">
+    <Box h="full" w="full" position="relative">
+      <Box
+        position="absolute"
+        top="0"
+        left="40px"
+        right="10px"
+        bottom="30px"
+        backdropFilter="blur(10px)"
+        zIndex="0"
+      />
       <ResponsiveLine
         data={[
           ...animatedData,
@@ -243,6 +252,16 @@ export default function DistributionGraph({
         animate={true}
         motionConfig="gentle"
         transitionMode="default"
+        layers={[
+          "grid",
+          "markers",
+          "areas",
+          "lines",
+          "slices",
+          "axes",
+          "points",
+          "legends",
+        ]}
       />
     </Box>
   );
