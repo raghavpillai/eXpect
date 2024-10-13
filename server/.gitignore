@@ -1,5 +1,5 @@
 .venv
 .DS_Store
 __pycache__
-.env*
+.env
 *__samples_with*
