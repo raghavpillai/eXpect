@@ -193,6 +193,7 @@ async def sample_x(username: str, sampling_text: str):
                 print(f"Error processing user {user_with_tweets.user.name}: {str(e)}")
 
         responses = await asyncio.gather(*[process_user(user) for user in sample_response.samples])
+        responses = [r for r in responses if r is not None]
         
         end_time = time.time()
         total_time = int((end_time - start_time) * 1000)
