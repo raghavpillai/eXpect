@@ -124,72 +124,78 @@ export default function SearchPage() {
         justifyContent="center"
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
       >
         <TitleSection />
-        <Box></Box>
         <MotionBox
-          borderWidth={1}
-          borderRadius="lg"
-          p={4}
           w="full"
-          backdropFilter="blur(10px)"
-          initial={{ scale: 1, opacity: 0 }}
           animate={{
-            scale: isFocused ? 1 : 1,
-            opacity: 1,
+            scale: isFocused ? 1.02 : 1,
           }}
-          transition={{ duration: 0.3, delay: 0.7 }}
+          transition={{ duration: 0.1 }}
         >
-          <VStack spacing={4}>
-            <InputGroup>
-              <InputLeftElement pointerEvents="none" h="auto">
-                <SearchIcon color="gray.500" mt={3} />
-              </InputLeftElement>
-              <Textarea
-                placeholder="You ask, we answer..."
-                minH="40px"
-                overflow="hidden"
-                resize="none"
-                py={2}
-                pl={10}
-                pr={2}
-                onChange={handlePostInputChange}
-                onFocus={() => handleFocus(true)}
-                onBlur={() => handleFocus(false)}
-              />
-            </InputGroup>
+          <MotionBox
+            borderWidth={1}
+            borderRadius="lg"
+            p={4}
+            w="full"
+            backdropFilter="blur(10px)"
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: 1,
+            }}
+            transition={{ duration: 0.5, delay: 1.2 }}
+          >
+            <VStack spacing={4}>
+              <InputGroup>
+                <InputLeftElement pointerEvents="none" h="auto">
+                  <SearchIcon color="gray.500" mt={3} />
+                </InputLeftElement>
+                <Textarea
+                  placeholder="Enter your sample post"
+                  minH="40px"
+                  overflow="hidden"
+                  resize="none"
+                  py={2}
+                  pl={10}
+                  pr={2}
+                  onChange={handlePostInputChange}
+                  onFocus={() => handleFocus(true)}
+                  onBlur={() => handleFocus(false)}
+                />
+              </InputGroup>
 
-            <HStack justify="space-between" width="100%">
-              <HStack>
+              <HStack justify="space-between" width="100%">
+                <HStack>
+                  <MotionButton
+                    leftIcon={<AttachmentIcon />}
+                    variant="ghost"
+                    size="sm"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Attach
+                  </MotionButton>
+                </HStack>
                 <MotionButton
-                  leftIcon={<AttachmentIcon />}
-                  variant="ghost"
+                  colorScheme="teal"
+                  rightIcon={<SearchIcon />}
                   size="sm"
+                  bg="white"
+                  color="black"
+                  rounded="full"
+                  _hover={{ bg: "rgba(255,255,255,0.6)" }}
+                  disabled={postQuery === "" || loading}
+                  onClick={handleSearchSubmit}
+                  isLoading={loading}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  Attach
+                  Analyze
                 </MotionButton>
               </HStack>
-              <MotionButton
-                colorScheme="teal"
-                rightIcon={<SearchIcon />}
-                size="sm"
-                bg="white"
-                color="black"
-                rounded="full"
-                _hover={{ bg: "rgba(255,255,255,0.6)" }}
-                disabled={postQuery === "" || loading}
-                onClick={handleSearchSubmit}
-                isLoading={loading}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Search
-              </MotionButton>
-            </HStack>
-          </VStack>
+            </VStack>
+          </MotionBox>
         </MotionBox>
       </MotionVStack>
     </MotionBox>
