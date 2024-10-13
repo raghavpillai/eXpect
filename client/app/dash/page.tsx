@@ -307,6 +307,7 @@ export default function DashPage() {
                     console.log('new line', parsed)
                     setData((prevData) => [...prevData, parsed]);
                     setPosts((prevData) => [...prevData, parsed]);
+                    setDataLoading(false); // allow rendering to begin
                   } catch (e) {
                     console.error("Error parsing JSON:", e);
                   }
@@ -375,7 +376,7 @@ export default function DashPage() {
       spacing={0}
       zIndex={20}
     >
-      <LoadingModal isOpen={data.length === 0} />
+      <LoadingModal isOpen={dataLoading && data.length === 0} />
       <Box
         position="absolute"
         top={0}
