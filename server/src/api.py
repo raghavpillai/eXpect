@@ -2,6 +2,7 @@ import os
 import json
 import httpx
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
@@ -176,9 +177,7 @@ async def sample_x(username: str, sampling_text: str):
     """
     Given a target username and some sampling text, impersonate the replies of a sample set of the username's followers.
     """
-    try:
-        start_time = time.time()
-        
+    try:        
         sample_response = await sample_users_with_tweets_from_username(username)
 
         async def process_user(user_with_tweets: UserWithTweets):
@@ -196,18 +195,18 @@ async def sample_x(username: str, sampling_text: str):
                 }
             except Exception as e:
                 print(f"Error processing user {user_with_tweets.user.name}: {str(e)}")
+                return None
 
-        responses = await asyncio.gather(*[process_user(user) for user in sample_response.samples])
-        responses = [r for r in responses if r is not None]
-        
-        end_time = time.time()
-        total_time = int((end_time - start_time) * 1000)
-            
-        return JSONResponse({
-            "samples": responses,
-            "sampling_time": sample_response.response_time,
-            "total_time": total_time
-        })
+        async def stream_responses():
+            tasks = [process_user(user) for user in sample_response.samples]
+            for result in asyncio.as_completed(tasks):
+                processed_result = await result
+                if processed_result:
+                    yield json.dumps(processed_result) + "\n"
+
+        response = StreamingResponse(stream_responses(), media_type="application/json")
+
+        return response
     except Exception as e:
         traceback_str = ''.join(traceback.format_tb(e.__traceback__))
         error_message = f"Error processing request: {e}\nTraceback: {traceback_str}"
@@ -225,6 +224,10 @@ if __name__ == "__main__":
     # test = asyncio.run(impersonate_reply("Ray", "I love Trump", "Texas", ["Trump is the best! #MAGA", "I hate democrats"], "Kamala harris will win!"))
     # print(test.model_dump())
 
-    test = asyncio.run(sample_x('aheze0', "I love kamala harris"))
-    response_content = test.body.decode('utf-8')
-    print(json.loads(response_content))
+    async def test_sample_x():
+        response = await sample_x('aheze0', "I love kamala harris")
+        async for line in response.body_iterator:
+            result = json.loads(line)
+            print(result)
+
+    asyncio.run(test_sample_x())
