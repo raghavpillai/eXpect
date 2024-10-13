@@ -24,10 +24,10 @@ export default function SwarmGraph({
   setStartScore,
   setEndScore,
 }: SwarmGraphProps) {
-  const data = posts.map((post) => ({
-    id: post.handle,
+  const data = posts.map((post: any) => ({
+    id: post.user.id,
     group: "",
-    value: post.sentiment * 100,
+    value: post.response.sentiment * 100,
   }));
 
   const handleClick = (node: any) => {
