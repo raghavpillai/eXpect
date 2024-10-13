@@ -11,8 +11,11 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 // import LoadingModal from "./components/loading-modal";
+import { IoRefresh } from "react-icons/io5";
+
 import DistributionGraph from "./components/distribution-graph";
 import SwarmGraph from "./components/swarm-graph";
+
 const TemperatureBar = () => {
   return (
     <VStack w="100%">
@@ -73,12 +76,14 @@ const Graphs = ({ posts }: { posts: any }) => {
   return (
     <VStack w="full" h="full">
       <HStack w="full" justify="space-between">
-        <HStack>
+        <HStack px={4}>
           <Button
             size="xs"
-            variant="outline"
-            colorScheme="gray"
+            bg="rgba(255,255,255,0.4)"
             onClick={resetScores}
+            _hover={{ bg: "rgba(255,255,255,0.6)" }}
+            borderRadius="full"
+            leftIcon={<IoRefresh fontSize="0.9rem" />}
           >
             Reset
           </Button>
