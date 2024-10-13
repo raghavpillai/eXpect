@@ -12,5 +12,6 @@ dependencies = [
     "python-dotenv>=1.0.1",
     "python-socketio>=5.11.4",
     "requests>=2.32.3",
+    "slowapi>=0.1.9",
     "uvicorn>=0.31.1",
 ]
