@@ -41,7 +41,7 @@ export default function LoginPage() {
 
     const handleGetUserInfo = async () => {
       try {
-        const url = `http://localhost:8080/user/${tempHandle}`;
+        const url = `${process.env.NEXT_PUBLIC_API_URL}/user/${tempHandle}`;
         const response = await fetch(url);
 
         if (!response.ok) {
