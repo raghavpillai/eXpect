@@ -11,8 +11,16 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useProfileStore } from "@utils/stores/profile";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+
+const MotionBox = motion(Box);
+const MotionVStack = motion(VStack);
+const MotionText = motion(Text);
+const MotionImage = motion(Image);
+const MotionInput = motion(Input);
+const MotionButton = motion(Button);
 
 export default function LoginPage() {
   const [tempHandle, setTempHandle] = useState("");
@@ -37,8 +45,16 @@ export default function LoginPage() {
   };
 
   return (
-    <Box w="100vw" h="100vh" position="relative" overflow="hidden">
-      <Image
+    <MotionBox
+      w="100vw"
+      h="100vh"
+      position="relative"
+      overflow="hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <MotionImage
         src="/bg-1.png"
         alt="bg-login"
         position="absolute"
@@ -47,8 +63,11 @@ export default function LoginPage() {
         h="100%"
         objectFit="cover"
         filter="grayscale(30%) brightness(100%)"
+        initial={{ scale: 1.1 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 1 }}
       />
-      <VStack
+      <MotionVStack
         h="full"
         w="50%"
         bg="rgba(0, 0, 0, 0.4)"
@@ -62,30 +81,64 @@ export default function LoginPage() {
         display="flex"
         alignItems="center"
         justifyContent="center"
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
       >
-        <Text fontSize="xl">Login to</Text>
+        <MotionText
+          fontSize="xl"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+        >
+          Login to
+        </MotionText>
         <HStack spacing={0.5}>
-          <Text fontSize="3xl" fontWeight="bold">
+          <MotionText
+            fontSize="3xl"
+            fontWeight="bold"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
+          >
             e
-          </Text>
-          <Image
+          </MotionText>
+          <MotionImage
             src="/x-icon.png"
             alt="logo"
             w="20px"
             h="20px"
             filter="invert(100%)"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.9 }}
           />
-          <Text fontSize="3xl" fontWeight="bold">
+          <MotionText
+            fontSize="3xl"
+            fontWeight="bold"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 1.1 }}
+          >
             pect
-          </Text>
+          </MotionText>
         </HStack>
-        <VStack mt={12} spacing={4}>
-          <Input
+        <MotionVStack
+          mt={12}
+          spacing={4}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 1.3 }}
+        >
+          <MotionInput
             placeholder="@rag_pil"
             value={tempHandle}
             onChange={handleTempHandleChange}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 1.5 }}
           />
-          <Button
+          <MotionButton
             bg="white"
             color="black"
             rightIcon={<ChevronRightIcon />}
@@ -95,11 +148,16 @@ export default function LoginPage() {
             disabled={tempHandle === ""}
             _hover={{ bg: "rgba(255,255,255,0.6)" }}
             isLoading={loading}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 1.7 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             Login
-          </Button>
-        </VStack>
-      </VStack>
-    </Box>
+          </MotionButton>
+        </MotionVStack>
+      </MotionVStack>
+    </MotionBox>
   );
 }
