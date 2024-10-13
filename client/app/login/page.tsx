@@ -14,6 +14,7 @@ import { useProfileStore } from "@utils/stores/profile";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import config from '@/config';
 
 const MotionBox = motion(Box as any);
 const MotionVStack = motion(VStack as any);
@@ -41,7 +42,7 @@ export default function LoginPage() {
 
     const handleGetUserInfo = async () => {
       try {
-        const url = `http://localhost:8080/user/${tempHandle}`;
+        const url = `${config.serverUrl}/user/${tempHandle}`;
         const response = await fetch(url);
 
         if (!response.ok) {
