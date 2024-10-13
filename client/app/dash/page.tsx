@@ -66,7 +66,7 @@ export default function DashPage() {
 
     const handleSendQuery = async () => {
       try {
-        const url = `http://localhost:8080/sample_x?username=${handle}&sampling_text=${searchQuery}`;
+        const url = `${process.env.NEXT_PUBLIC_API_URL}/sample_x?username=${handle}&sampling_text=${searchQuery}`;
         const response = await fetch(url);
 
         if (!response.ok) {
