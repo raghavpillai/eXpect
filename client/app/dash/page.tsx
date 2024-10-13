@@ -15,9 +15,6 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 // import LoadingModal from "./components/loading-modal";
-import { useRouter } from "next/navigation";
-import { IoArrowBack, IoRefresh } from "react-icons/io5";
-
 import {
   Modal,
   ModalBody,
@@ -27,6 +24,10 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@/app/components/modal";
+import { useProfileStore } from "@utils/stores/profile";
+import { useSearchQueryStore } from "@utils/stores/search";
+import { useRouter } from "next/navigation";
+import { IoArrowBack, IoRefresh } from "react-icons/io5";
 import DistributionGraph from "./components/distribution-graph";
 import SwarmGraph from "./components/swarm-graph";
 
@@ -231,12 +232,27 @@ export default function DashPage() {
   const [startScore, setStartScore] = useState<number | null>(null);
   const [endScore, setEndScore] = useState<number | null>(null);
   const [isAllPostsModalOpen, setIsAllPostsModalOpen] = useState(false);
+  const { handle } = useProfileStore();
+  const { searchQuery } = useSearchQueryStore();
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
+    if (hasInitialized) {
+      return;
+    }
+    setHasInitialized(true);
+
+    const handleSendQuery = async () => {
+      console.log(handle);
+      console.log(searchQuery);
+    };
+
+    handleSendQuery();
+
     setTimeout(() => {
       setDataLoading(false);
     }, 3000); // Dummy loading time
-  }, []);
+  }, [hasInitialized]);
 
   const posts = [
     {
@@ -526,7 +542,7 @@ export default function DashPage() {
           <ModalHeader>All Posts</ModalHeader>
           <ModalCloseButton />
           <ModalBody overflowY="scroll">
-            <Grid templateColumns="repeat(3, 1fr)" gap={4} maxH="60vh">
+            <Grid templateColumns="repeat(2, 1fr)" gap={4} maxH="60vh">
               {posts.map((post, index) => (
                 <UserPost
                   key={index}

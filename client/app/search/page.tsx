@@ -10,6 +10,7 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
+import { useSearchQueryStore } from "@utils/stores/search";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ProfileSection from "./components/profile-section";
@@ -43,7 +44,7 @@ const BackgroundImage = () => {
 export default function SearchPage() {
   const [postQuery, setPostQuery] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const { setSearchQuery } = useSearchQueryStore();
   const router = useRouter();
   const handlePostInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPostQuery(e.target.value);
@@ -57,6 +58,7 @@ export default function SearchPage() {
 
   const handleSearchSubmit = () => {
     setLoading(true);
+    setSearchQuery(postQuery);
 
     setTimeout(() => {
       setLoading(false);
