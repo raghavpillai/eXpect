@@ -13,5 +13,5 @@ class Config:
     MAX_TWEETS = 50
     MAX_FOLLOWERS = 500
     MAX_FOLLOWING = 500
-    MAX_FOLLOWER_SAMPLE = 100
+    MAX_FOLLOWER_SAMPLE = 50
     JSON_BASE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))  # path for JSON files is in /xai-hackathon/server/*.json
