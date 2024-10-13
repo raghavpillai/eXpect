@@ -6,7 +6,7 @@ from src.config import (
     MAX_TWEETS,
 )
 from src.database import Database
-from src.utils.functions import print_rate_limits
+from src.utils.utils import print_rate_limits
 
 
 async def call_api_with_retry(url, params=None, headers=None, printLimits=False):
