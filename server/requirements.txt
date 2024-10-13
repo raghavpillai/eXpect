@@ -6,3 +6,5 @@ uvicorn
 fastapi
 pytest
 socketio
+instructor
+openai
