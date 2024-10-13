@@ -230,9 +230,9 @@ if __name__ == "__main__":
     # except Exception as e:
     #     print(f"Error: {e}")
 
-    # test = asyncio.run(impersonate_reply("Ray", "I love Trump", "Texas", ["Trump is the best! #MAGA", "I hate democrats"], "Kamala harris will win!"))
-    # print(test)
-
-    test = asyncio.run(sample_x('iporollo', "I love kamala harris"))
+    test = asyncio.run(impersonate_reply("Ray", "I love Trump", "Texas", ["Trump is the best! #MAGA", "I hate democrats"], "Kamala harris will win!"))
     print(test)
+
+    # test = asyncio.run(sample_x('iporollo', "I love kamala harris"))
+    # print(test)
     
