@@ -4,14 +4,15 @@ import json
 import os
 import traceback
 from itertools import cycle
-
+import tracemalloc
+import uvicorn
 import httpx
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
-from x_functions import sample_users_with_tweets_from_username
+from x_functions import sample_users_with_tweets_from_username, get_user_by_username
 from x_models import UserWithTweets
 
 load_dotenv(".env")
@@ -195,6 +196,21 @@ async def root():
     return JSONResponse({"message": "API"})
 
 
+@app.get("/user/{username}")
+async def get_user(username: str):
+    """
+    Get user information by username.
+    """
+    try:
+        user = await get_user_by_username(username)
+        if user is None:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        return user
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching user: {str(e)}")
+
+
 @app.get("/sample_x")
 async def sample_x(username: str, sampling_text: str):
     """
@@ -237,21 +253,21 @@ async def sample_x(username: str, sampling_text: str):
 
 
 if __name__ == "__main__":
-    # try:
-    #     tracemalloc.start()
-    #     uvicorn.run(
-    #         "src.api:app", host="0.0.0.0", port=8080, reload=True, lifespan="on"
-    #     )
-    # except Exception as e:
-    #     print(f"Error: {e}")
+    try:
+        tracemalloc.start()
+        uvicorn.run(
+            "api:app", host="0.0.0.0", port=8080, reload=True, lifespan="on"
+        )
+    except Exception as e:
+        print(f"Error: {e}")
 
     # test = asyncio.run(impersonate_reply("Ray", "I love Trump", "Texas", ["Trump is the best! #MAGA", "I hate democrats"], "Kamala harris will win!"))
     # print(test.model_dump())
 
-    async def test_sample_x():
-        response = await sample_x("raydelvecc", "openai is better than x ai")
-        async for line in response.body_iterator:
-            result = json.loads(line)
-            print(result)
+    # async def test_sample_x():
+    #     response = await sample_x("raydelvecc", "openai is better than x ai")
+    #     async for line in response.body_iterator:
+    #         result = json.loads(line)
+    #         print(result)
 
-    asyncio.run(test_sample_x())
+    # asyncio.run(test_sample_x())
