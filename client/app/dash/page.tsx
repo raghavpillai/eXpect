@@ -453,7 +453,7 @@ export default function DashPage() {
       p={8}
       display="flex"
       position="relative"
-      spacing={5}
+      spacing={0}
     >
       <Button
         onClick={() => router.push("/search")}
@@ -472,7 +472,7 @@ export default function DashPage() {
         handle="@rag_pil"
         content="This is amazing! I love this!"
       />
-      <Box minH="50vh" w="full">
+      <Box minH="50vh" w="full" mt={6}>
         <Graphs
           posts={posts}
           startScore={startScore}
@@ -496,6 +496,7 @@ export default function DashPage() {
         p={3}
         bg="rgba(255,255,255,0.1)"
         _hover={{ bg: "rgba(255,255,255,0.2)" }}
+        mt={2}
       >
         View All
       </Button>
@@ -531,7 +532,7 @@ export default function DashPage() {
                   key={index}
                   name={post.name}
                   handle={post.handle}
-                  post={post.reply}
+                  reply={post.reply}
                   sentiment={post.sentiment}
                 />
               ))}
