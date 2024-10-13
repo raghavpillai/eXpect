@@ -55,6 +55,7 @@ const UserPost = ({ name, handle, reply, sentiment }: UserPostProps) => {
       w="full"
       maxW="500px"
       justify="space-between"
+      backdropFilter="blur(5px)"
     >
       <HStack>
         <Avatar name={handle} size="sm" mr={2} />
@@ -103,6 +104,7 @@ const QueryPost = ({ name, handle, content }: QueryPostProps) => {
       border="1px solid rgba(255,255,255,0.2)"
       w="full"
       maxW="500px"
+      backdropFilter="blur(5px)"
     >
       <Avatar name={handle} size="sm" mr={2} />
       <VStack align="flex-start">
@@ -146,7 +148,7 @@ const Graphs = ({
   };
 
   return (
-    <VStack w="full" h="full">
+    <VStack w="full" h="50vh">
       <HStack w="full" justify="space-between">
         <HStack px={4} spacing={4}>
           <Button
@@ -203,24 +205,26 @@ const Graphs = ({
           </Button>
         </ButtonGroup>
       </HStack>
-      {selectedGraph === "distribution" && (
-        <DistributionGraph
-          posts={posts}
-          startScore={startScore}
-          endScore={endScore}
-          setStartScore={setStartScore}
-          setEndScore={setEndScore}
-        />
-      )}
-      {selectedGraph === "swarm" && (
-        <SwarmGraph
-          posts={posts}
-          startScore={startScore}
-          endScore={endScore}
-          setStartScore={setStartScore}
-          setEndScore={setEndScore}
-        />
-      )}
+      <Box w="full" h="full">
+        {selectedGraph === "distribution" && (
+          <DistributionGraph
+            posts={posts}
+            startScore={startScore}
+            endScore={endScore}
+            setStartScore={setStartScore}
+            setEndScore={setEndScore}
+          />
+        )}
+        {selectedGraph === "swarm" && (
+          <SwarmGraph
+            posts={posts}
+            startScore={startScore}
+            endScore={endScore}
+            setStartScore={setStartScore}
+            setEndScore={setEndScore}
+          />
+        )}
+      </Box>
     </VStack>
   );
 };
@@ -233,6 +237,7 @@ const BackgroundImage = () => {
       right={0}
       w="100%"
       height="100%"
+      // height="300px"
       zIndex={-1}
       backgroundImage="url('/bg-3.png')"
       backgroundSize="cover"
@@ -489,8 +494,8 @@ export default function DashPage() {
 
   return (
     <VStack
-      w="100vw"
-      h="100vh"
+      w="full"
+      h="full"
       color="white"
       p={8}
       display="flex"
@@ -531,36 +536,46 @@ export default function DashPage() {
           setEndScore={setEndScore}
         />
       </Box>
-      <Text
-        w="full"
-        textAlign="center"
-        fontSize="2xl"
-        fontWeight="bold"
-        mt={12}
-      >
-        {startScore && endScore ? `Sampled Posts` : "Posts"}
-      </Text>
-      <Button
-        onClick={() => setIsAllPostsModalOpen(true)}
-        mb={4}
-        p={3}
-        bg="rgba(255,255,255,0.1)"
-        _hover={{ bg: "rgba(255,255,255,0.2)" }}
-        mt={2}
-      >
-        View All
-      </Button>
+      <VStack w="full">
+        <Text
+          w="full"
+          textAlign="center"
+          fontSize="2xl"
+          fontWeight="bold"
+          mt={12}
+        >
+          {startScore && endScore ? `Sampled Posts` : "Posts"}
+        </Text>
+        <Button
+          onClick={() => setIsAllPostsModalOpen(true)}
+          mb={4}
+          p={3}
+          bg="rgba(255,255,255,0.1)"
+          _hover={{ bg: "rgba(255,255,255,0.2)" }}
+          mt={2}
+          backdropFilter="blur(3px)"
+        >
+          View All
+        </Button>
+      </VStack>
       <HStack w="100%" justify="space-between" p={4}>
         <Box w="100%">
-          <Grid templateColumns="repeat(2, 1fr)" gap={4} w="100%">
+          <Grid
+            templateColumns="repeat(2, 1fr)"
+            gap={4}
+            w="100%"
+            justifyContent="center"
+            alignItems="center"
+          >
             {distributedPosts.map((post, index) => (
-              <UserPost
-                key={index}
-                name={post.name}
-                handle={post.handle}
-                reply={post.reply}
-                sentiment={post.sentiment}
-              />
+              <Box key={index} display="flex" justifyContent="center">
+                <UserPost
+                  name={post.name}
+                  handle={post.handle}
+                  reply={post.reply}
+                  sentiment={post.sentiment}
+                />
+              </Box>
             ))}
           </Grid>
         </Box>
@@ -576,15 +591,22 @@ export default function DashPage() {
           <ModalHeader>All Posts</ModalHeader>
           <ModalCloseButton />
           <ModalBody overflowY="scroll">
-            <Grid templateColumns="repeat(2, 1fr)" gap={4} maxH="60vh">
+            <Grid
+              templateColumns="repeat(2, 1fr)"
+              gap={4}
+              maxH="60vh"
+              justifyContent="center"
+              alignItems="center"
+            >
               {posts.map((post, index) => (
-                <UserPost
-                  key={index}
-                  name={post.name}
-                  handle={post.handle}
-                  reply={post.reply}
-                  sentiment={post.sentiment}
-                />
+                <Box key={index} display="flex" justifyContent="center">
+                  <UserPost
+                    name={post.name}
+                    handle={post.handle}
+                    reply={post.reply}
+                    sentiment={post.sentiment}
+                  />
+                </Box>
               ))}
             </Grid>
           </ModalBody>
