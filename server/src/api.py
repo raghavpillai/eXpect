@@ -11,13 +11,13 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
-from pydantic import BaseModel, Field
 from src.config import GROK_API_KEY_CYCLE, GROK_API_KEYS, GROK_LLM_API_URL
+from src.prompts import SYSTEM_PROMPT, USER_PROMPT
 from src.utils.functions import (
     get_user_by_username,
     sample_users_with_tweets_from_username,
 )
-from src.utils.models import UserSampleResponse, UserWithTweets
+from src.utils.models import GrokImpersonationReply, UserSampleResponse, UserWithTweets
 
 load_dotenv(".env")
 
@@ -46,24 +46,6 @@ def parse_input(json_input: dict[str, Any]) -> tuple[str, str, list[str], str]:
     sample_tweets = [tweet.get("text", "").strip() for tweet in tweets]
     post_type = json_input.get("post_type", "").strip().lower()  # 'text' or 'image'
     return name, bio, sample_tweets, post_type
-
-
-class GrokImpersonationReply(BaseModel):
-    explanation: str = Field(
-        ...,
-        description="The explanation of the person's impersonated response to the input post. 1-2 sentences.",
-    )
-    response: str = Field(
-        ..., description="Impersonated response tweet to the input post."
-    )
-    agree: bool = Field(
-        ...,
-        description="A boolean flag indicating if the person supports the text or not. ALWAYS set to either true or false.",
-    )
-    sentiment: float = Field(
-        ...,
-        description="A sentiment score of the person's thoughts on the input post. 0 is disagree, 1 is agree.",
-    )
 
 
 async def make_grok_api_request(payload: dict[str, Any]) -> dict[str, Any]:
@@ -110,41 +92,13 @@ async def impersonate_reply(
     name: str, bio: str, location: str, sample_tweets: list[str], post_content: str
 ) -> GrokImpersonationReply:
     """Generate a simulated reply using Grok LLM API based on user information and post content."""
-    sys_prompt = f"""
-        You are impersonating {name}, a real human person.
-        To properly impersonate this person, here is some information on them:
-
-        # DESCRIPTION
-        "{bio}"
-
-        # LOCATION
-        "{location}"
-
-        # SAMPLE TWEETS
-        {'\n'.join([f'- "{tweet}"' for tweet in sample_tweets])}
-
-        # YOUR TASK
-        You will read and simulate a reply to an input post, as the person described above! YOU MUST MATCH THE STYLE
-        OF THE PERSON ABOVE AS MUCH AS POSSIBLE. MATCH THE STYLE OF THEIR POSTING IN THE IMPERSONATED RESPONSE.
-
-        You will respond to this post AS THE PERSON, IN THEIR STYLE, with JSON in this schema:
-
-        {json.dumps(GrokImpersonationReply.model_json_schema(), indent=2)} 
-
-        Output NOTHING else except for this JSON!
-        """
-
-    prompt = f"""
-        INPUT POST:
-        {post_content}
-
-        IMPERSONATED JSON RESPONSE:
-        """
+    system_prompt = SYSTEM_PROMPT(name, bio, location, sample_tweets)
+    user_prompt = USER_PROMPT(post_content)
 
     payload = {
         "messages": [
-            {"role": "system", "content": sys_prompt},
-            {"role": "user", "content": prompt},
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
         ],
         "model": "grok-2-mini-public",
         "stream": False,
@@ -169,8 +123,7 @@ async def impersonate_reply(
         except (SyntaxError, ValueError):
             raise ValueError("Failed to parse the reply as JSON or Python literal.")
 
-    validated_reply = GrokImpersonationReply(**reply_json)
-    return validated_reply
+    return GrokImpersonationReply(**reply_json)
 
 
 @app.get("/")
