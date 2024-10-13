@@ -9,7 +9,15 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@/app/components/modal";
-import { Box, Button, Grid, HStack, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Grid,
+  HStack,
+  Image,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { useProfileStore } from "@utils/stores/profile";
 import { useSearchQueryStore } from "@utils/stores/search";
 import { motion } from "framer-motion";
@@ -27,6 +35,8 @@ const MotionBox = motion(Box as any);
 const MotionHStack = motion(HStack as any);
 const MotionVStack = motion(VStack as any);
 const MotionButton = motion(Button as any);
+const MotionText = motion(Text as any);
+const MotionImage = motion(Image as any);
 
 const AnimatedUserPost = motion(UserPost as any);
 
@@ -230,18 +240,49 @@ export default function DashPage() {
       >
         Back
       </MotionButton>
-      <MotionBox
+      <MotionVStack
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
+        <HStack spacing={0.5}>
+          <MotionText
+            fontSize="3xl"
+            fontWeight="bold"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0 }}
+          >
+            e
+          </MotionText>
+          <MotionImage
+            src="/x-icon.png"
+            alt="logo"
+            w="20px"
+            h="20px"
+            filter="invert(100%)"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          />
+          <MotionText
+            fontSize="3xl"
+            fontWeight="bold"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            pect
+          </MotionText>
+        </HStack>
+
         <QueryPost
           name={name}
           handle={handle}
           content={searchQuery}
           pfp={profilePicture}
         />
-      </MotionBox>
+      </MotionVStack>
       <MotionBox
         minH="50vh"
         w="full"
