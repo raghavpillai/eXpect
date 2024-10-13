@@ -53,6 +53,8 @@ async def get_user_by_username(username):
     Gets the user by their username. Returns their ID, description, name, and location.
     """
     try:
+        username = username.lstrip('@')
+        
         json_path = os.path.join(Config.JSON_BASE_PATH, "users.json")
         if os.path.exists(json_path):
             with open(json_path, "r") as f:
