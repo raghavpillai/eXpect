@@ -10,20 +10,15 @@ from src.utils.utils import print_rate_limits
 
 
 async def call_api_with_retry(url, params=None, headers=None, printLimits=False):
-    """
-    Calls the API with all bearer tokens and returns results if successful.
-    """
+    """Calls the API with all bearer tokens and returns results if successful."""
     try:
         print(f"CALLING {url}...")
 
         if headers is None:
             headers = {}
 
-        print("BEARER TOKENS:", BEARER_TOKENS)
-
         async with httpx.AsyncClient() as client:
-            print("BEARER TOKENS:", BEARER_TOKENS)
-            tokens = list(BEARER_TOKENS)  # Create a local copy of BEARER_TOKENS
+            tokens = list(BEARER_TOKENS)
             for i in range(len(tokens)):
                 try:
                     bearer_token = tokens[i]
@@ -50,7 +45,7 @@ async def call_api_with_retry(url, params=None, headers=None, printLimits=False)
 
         print("All bearer tokens exhausted without success.")
     except Exception as e:
-        print(e)
+        print("Error in call_api_with_retry:", e)
     return None
 
 
@@ -61,16 +56,13 @@ async def get_user_by_username(username):
     try:
         username = username.lstrip("@")
 
-        cached_data = Database.get_cached_data("users", username)
-        if cached_data:
+        if cached_data := Database.get_cached_data("users", username):
             return cached_data
 
         url = f"https://api.x.com/2/users/by/username/{username}"
         params = {"user.fields": "description,location,profile_image_url"}
 
         data = await call_api_with_retry(url, params=params)
-        print("DATA!")
-        print(data)
         if data:
             Database.save_cached_data("users", username, data)
 
@@ -84,8 +76,7 @@ async def get_user_tweets(user_id, max_tweets: int = MAX_TWEETS):
     Gets list of tweets a user has made, excluding replies and retweets. Takes the sensitive tag and the tweet's text.
     """
     try:
-        cached_data: dict | None = Database.get_cached_data("user_tweets", str(user_id))
-        if cached_data:
+        if cached_data := Database.get_cached_data("user_tweets", str(user_id)):
             return cached_data
 
         url = f"https://api.x.com/2/users/{user_id}/tweets"
@@ -111,8 +102,7 @@ async def get_user_followers(user_id, max_followers: int = MAX_FOLLOWERS):
     Gets list of followers for a given user ID. Returns up to 1000 followers.
     """
     try:
-        cached_data = Database.get_cached_data("user_followers", str(user_id))
-        if cached_data:
+        if cached_data := Database.get_cached_data("user_followers", str(user_id)):
             return cached_data
 
         url = f"https://api.x.com/2/users/{user_id}/followers"
@@ -134,8 +124,7 @@ async def get_user_following(user_id, max_following: int = MAX_FOLLOWING):
     Gets list of users a given user ID is following. Returns up to 1000 users.
     """
     try:
-        cached_data = Database.get_cached_data("user_following", str(user_id))
-        if cached_data:
+        if cached_data := Database.get_cached_data("user_following", str(user_id)):
             return cached_data
 
         url = f"https://api.x.com/2/users/{user_id}/following"
