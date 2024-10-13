@@ -7,11 +7,13 @@ from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 import traceback
 from x_functions import sample_users_with_tweets_from_username
+from x_models import UserWithTweets
 import uvicorn
 import asyncio
 import ast
 import tracemalloc
 from pydantic import BaseModel, Field
+import time
 
 load_dotenv('.env')
 
@@ -53,8 +55,9 @@ class GrokImpersonationReply(BaseModel):
     explanation: str = Field(..., description="The explanation of the person's response to the text")
     response: str = Field(..., description="A response tweet, as the user, to the input text")
     agree: bool = Field(..., description="A boolean flag indicating if the user supports the text or not")
+    sentiment: float = Field(..., description="A sentiment score of the user's thoughts on the input post. 0 is disagree, 1 is agree.")
 
-async def generate_reply(name: str, bio: str, location: str, sample_tweets: list[str], post_content: str) -> GrokImpersonationReply:
+async def impersonate_reply(name: str, bio: str, location: str, sample_tweets: list[str], post_content: str) -> GrokImpersonationReply:
     """
     Generate a simulated reply using Grok LLM API based on user information and post content.
     """
@@ -75,13 +78,11 @@ To properly impersonate them, here is some information on them:
 # YOUR TASK
 You will read and simulate a reply to an input post.
 
-Based on the person's information above, you will response to this post with JSON with the following keys:
+Based on the person's information above, you will response to this post with JSON in this schema:
 
-1. explanation: the explanation of the person's response to the text.
-2. response: a response tweet, as the user, to the input text.
-3. agree: a boolean flag, true or false, of if the user supports the text or not. 
+{json.dumps(GrokImpersonationReply.model_json_schema(), indent=2)} 
 
-Output NOTHING else except for this JSON.
+Output NOTHING else except for this JSON!
         """
     )
 
@@ -172,7 +173,7 @@ async def generate_reply_endpoint(request: Request):
 
         name, bio, sample_tweets, post_type = parse_input(json_input)
 
-        reply = await generate_reply(name, bio, sample_tweets, post_content)
+        reply = await impersonate_reply(name, bio, None, sample_tweets, post_content)
 
         return JSONResponse({"reply": reply})
     except HTTPException as http_exc:
@@ -184,23 +185,59 @@ async def generate_reply_endpoint(request: Request):
         raise HTTPException(status_code=500, detail=error_message)
 
 @app.get("/sample_x")
-async def sample_x(username: str):
+async def sample_x(username: str, sampling_text: str):
     """
-    Endpoint to sample users with tweets from a given username.
+    Given a target username and some sampling text, impersonate the replies of a sample set of the username's followers.
     """
     try:
-        result = await sample_users_with_tweets_from_username(username)
-        return JSONResponse(result.model_dump())
+        start_time = time.time()
+        
+        sample_response = await sample_users_with_tweets_from_username(username)
+
+        async def process_user(user_with_tweets: UserWithTweets):
+            try:
+                user_response = await impersonate_reply(
+                    user_with_tweets.user.name,
+                    user_with_tweets.user.description,
+                    user_with_tweets.user.location,
+                    user_with_tweets.tweets,
+                    sampling_text
+                )
+                return {
+                    "user": user_with_tweets.user.model_dump(),
+                    "response": user_response.model_dump()
+                }
+            except Exception as e:
+                pass
+
+        responses = await asyncio.gather(*[process_user(user) for user in sample_response.samples])
+        
+        end_time = time.time()
+        total_time = int((end_time - start_time) * 1000)
+            
+        return JSONResponse({
+            "samples": responses,
+            "sampling_time": sample_response.response_time,
+            "total_time": total_time
+        })
     except Exception as e:
         traceback_str = ''.join(traceback.format_tb(e.__traceback__))
         error_message = f"Error processing request: {e}\nTraceback: {traceback_str}"
         raise HTTPException(status_code=500, detail=error_message)
 
 if __name__ == "__main__":
-    try:
-        tracemalloc.start()
-        uvicorn.run(
-            "src.api:app", host="0.0.0.0", port=8080, reload=True, lifespan="on"
-        )
-    except Exception as e:
-        print(f"Error: {e}")
+    # try:
+    #     tracemalloc.start()
+    #     uvicorn.run(
+    #         "src.api:app", host="0.0.0.0", port=8080, reload=True, lifespan="on"
+    #     )
+    # except Exception as e:
+    #     print(f"Error: {e}")
+
+    # test = asyncio.run(impersonate_reply("Ray", "I love Trump", "Texas", ["Trump is the best! #MAGA", "I hate democrats"], "Kamala harris will win!"))
+    # print(test.model_dump())
+
+    test = asyncio.run(sample_x('iporollo', "I love kamala harris"))
+    response_content = test.body.decode('utf-8')
+    print(json.loads(response_content))
+    
