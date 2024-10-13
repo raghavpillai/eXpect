@@ -1,6 +1,14 @@
 "use client";
 
-import { Avatar, Box, HStack, Text, VStack } from "@chakra-ui/react";
+import {
+  Avatar,
+  Box,
+  Button,
+  ButtonGroup,
+  HStack,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 // import LoadingModal from "./components/loading-modal";
 import DistributionGraph from "./components/distribution-graph";
@@ -48,6 +56,94 @@ const UserPost = ({ handle, post }: UserPostProps) => {
         </Text>
       </HStack>
       <Text fontSize="sm">{post}</Text>
+    </VStack>
+  );
+};
+
+const Graphs = ({ posts }: { posts: any }) => {
+  const [selectedGraph, setSelectedGraph] = useState("distribution");
+  const [startScore, setStartScore] = useState<number | null>(null);
+  const [endScore, setEndScore] = useState<number | null>(null);
+
+  const resetScores = () => {
+    setStartScore(null);
+    setEndScore(null);
+  };
+
+  return (
+    <VStack w="full" h="full">
+      <HStack w="full" justify="space-between">
+        <HStack>
+          <Button
+            size="xs"
+            variant="outline"
+            colorScheme="gray"
+            onClick={resetScores}
+          >
+            Reset
+          </Button>
+          <Text
+            fontSize="sm"
+            color="gray.400"
+            display={startScore && !endScore ? "block" : "none"}
+          >
+            Sampling starting {startScore}
+          </Text>
+
+          <Text
+            fontSize="sm"
+            color="gray.400"
+            display={startScore && endScore ? "block" : "none"}
+          >
+            Sampling between {startScore} and {endScore}
+          </Text>
+        </HStack>
+
+        <ButtonGroup isAttached>
+          <Button
+            size="xs"
+            variant={selectedGraph === "distribution" ? "solid" : "outline"}
+            onClick={() => setSelectedGraph("distribution")}
+            bg={
+              selectedGraph === "distribution"
+                ? "rgba(255,255,255,0.2)"
+                : "transparent"
+            }
+          >
+            Distribution
+          </Button>
+          <Button
+            size="xs"
+            variant={selectedGraph === "swarm" ? "solid" : "outline"}
+            onClick={() => setSelectedGraph("swarm")}
+            bg={
+              selectedGraph === "swarm"
+                ? "rgba(255,255,255,0.2)"
+                : "transparent"
+            }
+          >
+            Quantity
+          </Button>
+        </ButtonGroup>
+      </HStack>
+      {selectedGraph === "distribution" && (
+        <DistributionGraph
+          posts={posts}
+          startScore={startScore}
+          endScore={endScore}
+          setStartScore={setStartScore}
+          setEndScore={setEndScore}
+        />
+      )}
+      {selectedGraph === "swarm" && (
+        <SwarmGraph
+          posts={posts}
+          startScore={startScore}
+          endScore={endScore}
+          setStartScore={setStartScore}
+          setEndScore={setEndScore}
+        />
+      )}
     </VStack>
   );
 };
@@ -233,11 +329,7 @@ export default function DashPage() {
       position="relative"
       spacing={0}
     >
-      {/* <LoadingModal isOpen={dataLoading} /> */}
-      {/* <PieChart agrees={agrees} disagrees={disagrees} /> */}
-      {/* <LineGraph posts={posts} /> */}
-      <DistributionGraph posts={posts} />
-      <SwarmGraph posts={posts} />
+      <Graphs posts={posts} />
       <HStack
         spacing={0}
         bg="rgba(255,255,255,0.1)"

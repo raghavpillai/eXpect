@@ -2,7 +2,6 @@
 
 import { Box } from "@chakra-ui/react";
 import { ResponsiveSwarmPlot } from "@nivo/swarmplot";
-import { useState } from "react";
 
 interface Post {
   handle: string;
@@ -10,25 +9,35 @@ interface Post {
   sentiment: number;
 }
 
-export default function SwarmGraph({ posts }: { posts: Post[] }) {
-  const [startMarker, setStartMarker] = useState<number | null>(null);
-  const [endMarker, setEndMarker] = useState<number | null>(null);
+interface SwarmGraphProps {
+  posts: Post[];
+  startScore: number | null;
+  endScore: number | null;
+  onStartScoreChange: (score: number | null) => void;
+  onEndScoreChange: (score: number | null) => void;
+}
 
+export default function SwarmGraph({
+  posts,
+  startScore,
+  endScore,
+  onStartScoreChange,
+  onEndScoreChange,
+}: SwarmGraphProps) {
   const data = posts.map((post) => ({
     id: post.handle,
-    group: "users",
+    group: "",
     value: post.sentiment * 100,
   }));
 
   const handleClick = (node: any) => {
-    if (!startMarker) {
-      setStartMarker(node.value as number);
-      setEndMarker(null);
-    } else if (!endMarker) {
-      setEndMarker(node.value as number);
+    if (!startScore) {
+      onStartScoreChange(node.value as number);
+    } else if (!endScore) {
+      onEndScoreChange(node.value as number);
     } else {
-      setStartMarker(node.value as number);
-      setEndMarker(null);
+      onStartScoreChange(node.value as number);
+      onEndScoreChange(null);
     }
   };
 
@@ -36,7 +45,7 @@ export default function SwarmGraph({ posts }: { posts: Post[] }) {
     <Box h="full" w="full" position="relative">
       <ResponsiveSwarmPlot
         data={data}
-        groups={["users"]}
+        groups={[""]}
         value="value"
         valueScale={{ type: "linear", min: 0, max: 100 }}
         size={10}
@@ -49,17 +58,25 @@ export default function SwarmGraph({ posts }: { posts: Post[] }) {
             ["opacity", 0.5],
           ],
         }}
-        margin={{ top: 20, right: 20, bottom: 70, left: 20 }}
+        margin={{ top: 0, right: 10, bottom: 30, left: 40 }}
         axisBottom={{
           tickSize: 10,
           tickPadding: 5,
           tickRotation: 0,
           legend: "Sentiment Score",
           legendPosition: "middle",
-          legendOffset: 46,
+          legendOffset: 20,
+          tickValues: [0, 100],
         }}
         axisTop={null}
-        axisLeft={null}
+        axisLeft={{
+          tickSize: 10,
+          tickPadding: 5,
+          tickRotation: 0,
+          legend: "Users",
+          legendPosition: "middle",
+          legendOffset: -15,
+        }}
         axisRight={null}
         layout="horizontal"
         theme={{
@@ -130,34 +147,34 @@ export default function SwarmGraph({ posts }: { posts: Post[] }) {
           </div>
         )}
       />
-      {startMarker !== null && endMarker !== null && (
+      {startScore !== null && endScore !== null && (
         <Box
           position="absolute"
           top="0"
           bottom="70px"
-          left={`${Math.min(startMarker, endMarker)}%`}
-          width={`${Math.abs(endMarker - startMarker)}%`}
+          left={`${Math.min(startScore, endScore)}%`}
+          width={`${Math.abs(endScore - startScore)}%`}
           bg="rgba(255, 255, 255, 0.1)"
           zIndex="1"
         />
       )}
-      {startMarker !== null && (
+      {startScore !== null && (
         <Box
           position="absolute"
           top="0"
           bottom="70px"
-          left={`${startMarker}%`}
+          left={`${startScore}%`}
           width="2px"
           bg="rgba(255, 255, 255, 0.5)"
           zIndex="2"
         />
       )}
-      {endMarker !== null && (
+      {endScore !== null && (
         <Box
           position="absolute"
           top="0"
           bottom="70px"
-          left={`${endMarker}%`}
+          left={`${endScore}%`}
           width="2px"
           bg="rgba(255, 255, 255, 0.5)"
           zIndex="2"

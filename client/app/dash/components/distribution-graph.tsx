@@ -36,7 +36,21 @@ function gaussianKDE(
   return kdeData;
 }
 
-export default function DistributionGraph({ posts }: { posts: Post[] }) {
+interface DistributionGraphProps {
+  posts: Post[];
+  startScore: number | null;
+  endScore: number | null;
+  setStartScore: (score: number | null) => void;
+  setEndScore: (score: number | null) => void;
+}
+
+export default function DistributionGraph({
+  posts,
+  startScore,
+  endScore,
+  setStartScore,
+  setEndScore,
+}: DistributionGraphProps) {
   // Extract sentiment values
   const sentiments = posts.map((post) => post.sentiment * 100);
 
@@ -58,33 +72,30 @@ export default function DistributionGraph({ posts }: { posts: Post[] }) {
           data: kdeData,
         },
       ]);
-    }, 1000); // 1 second delay
+    }, 100); // 1 second delay
 
     return () => clearTimeout(timer);
   }, []);
 
-  const [startSlice, setStartSlice] = useState<number | null>(null);
-  const [endSlice, setEndSlice] = useState<number | null>(null);
-
   const handleSlice = (slice: { points: readonly Point[] }) => {
     const clickedX = slice.points[0].data.x as number;
-    if (!startSlice) {
-      setStartSlice(clickedX);
-      setEndSlice(null);
-    } else if (!endSlice) {
-      setEndSlice(clickedX);
+    if (!startScore) {
+      setStartScore(clickedX);
+      setEndScore(null);
+    } else if (!endScore) {
+      setEndScore(clickedX);
     } else {
-      setStartSlice(clickedX);
-      setEndSlice(null);
+      setStartScore(clickedX);
+      setEndScore(null);
     }
   };
 
   // Add this new function to generate the highlighted area data
   const getHighlightedAreaData = () => {
-    if (startSlice === null || endSlice === null) return [];
+    if (startScore === null || endScore === null) return [];
 
-    const start = Math.min(startSlice, endSlice);
-    const end = Math.max(startSlice, endSlice);
+    const start = Math.min(startScore, endScore);
+    const end = Math.max(startScore, endScore);
 
     return kdeData.filter((point) => point.x >= start && point.x <= end);
   };
@@ -115,7 +126,7 @@ export default function DistributionGraph({ posts }: { posts: Post[] }) {
           legend: "Sentiment Score",
           legendOffset: 20,
           legendPosition: "middle",
-          tickValues: [0, 100], // Only show first and last tick
+          tickValues: [0, 100],
           format: (value) => value.toFixed(0), // Remove decimal places
         }}
         axisLeft={{
@@ -203,11 +214,11 @@ export default function DistributionGraph({ posts }: { posts: Post[] }) {
         brushProps={{
           brushColor: "rgba(255,255,255,0.1)",
         }}
-        margin={{ top: 0, right: 10, bottom: 45, left: 40 }}
+        margin={{ top: 0, right: 10, bottom: 30, left: 40 }}
         markers={[
-          startSlice && {
+          startScore && {
             axis: "x",
-            value: startSlice,
+            value: startScore,
             lineStyle: {
               stroke: "#808080",
               strokeWidth: 1,
@@ -216,9 +227,9 @@ export default function DistributionGraph({ posts }: { posts: Post[] }) {
             legend: "Start",
             legendOrientation: "vertical",
           },
-          endSlice && {
+          endScore && {
             axis: "x",
-            value: endSlice,
+            value: endScore,
             lineStyle: {
               stroke: "#808080",
               strokeWidth: 1,
