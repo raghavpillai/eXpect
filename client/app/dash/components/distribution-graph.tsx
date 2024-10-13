@@ -52,7 +52,7 @@ export default function DistributionGraph({
   setEndScore,
 }: DistributionGraphProps) {
   // Extract sentiment values
-  const sentiments = posts.map((post) => post.sentiment * 100);
+  const sentiments = posts.map((post: any) => post.response.sentiment * 100);
 
   // Generate KDE data
   const kdeData = gaussianKDE(sentiments, 5, 0, 100, 100);
