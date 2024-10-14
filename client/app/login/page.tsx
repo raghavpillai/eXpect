@@ -9,6 +9,7 @@ import {
   Input,
   Text,
   VStack,
+  useToast,
 } from "@chakra-ui/react";
 import { useProfileStore } from "@utils/stores/profile";
 import { motion } from "framer-motion";
@@ -27,6 +28,7 @@ export default function LoginPage() {
   const { setHandle, setName, setProfilePicture } = useProfileStore();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const toast = useToast();
 
   const handleTempHandleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
@@ -49,20 +51,31 @@ export default function LoginPage() {
         }
 
         const data = await response.json();
-        setName(data.name);
-        setProfilePicture(data.profile_image_url || data.image_url);
+        setName(data.data.name);
+        setProfilePicture(data.data.profile_image_url || data.data.image_url);
+
+        // if (
+        //   !data.data.name ||
+        //   !data.data.profile_image_url ||
+        //   !data.data.image_url
+        // ) {
+        //   throw new Error("User data is incomplete");
+        // }
+
+        router.push("/search");
       } catch (error) {
         console.error("Error fetching user data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch user data",
+          status: "error",
+        });
       } finally {
         setLoading(false);
       }
     };
 
     handleGetUserInfo();
-
-    setTimeout(() => {
-      router.push("/search");
-    }, 3000);
   };
 
   return (
@@ -90,7 +103,7 @@ export default function LoginPage() {
       />
       <MotionVStack
         h="full"
-        w="50%"
+        w={{ base: "80%", md: "50%" }}
         bg="rgba(0, 0, 0, 0.4)"
         position="absolute"
         right="0"
@@ -130,6 +143,7 @@ export default function LoginPage() {
             w="20px"
             h="20px"
             filter="invert(100%)"
+            mt={1}
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.9 }}

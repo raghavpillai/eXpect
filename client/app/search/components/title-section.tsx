@@ -31,7 +31,7 @@ export default function TitleSection() {
           w="58px"
           h="58px"
           filter="invert(100%)"
-          mt={5}
+          mt={6}
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.4 }}
