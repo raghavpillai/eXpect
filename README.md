@@ -38,3 +38,5 @@ Note: you'll need API keys (into .env) to run. We use a round robin key system (
     * Then, you can run `uvicorn src.api:app --host 0.0.0.0 --port 8080 --reload` from the `/server` directory to locally spin up the API!
     * ***NOTE: alternatively, you can follow the steps in the `Dockerfile` to run the API!***
     
+# Credits
+Developed by Raghav Pillai, Ray Del Vecchio, Ethan Shaotran, and Giovanni D'Antonio during the first XAI hackathon in San Francisco.
