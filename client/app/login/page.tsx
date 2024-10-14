@@ -69,6 +69,7 @@ export default function LoginPage() {
           title: "Error",
           description: "Failed to fetch user data",
           status: "error",
+          isClosable: true,
         });
       } finally {
         setLoading(false);
