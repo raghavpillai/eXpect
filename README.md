@@ -2,7 +2,9 @@
 
 ![Landing Page](client/public/landing.png)
 
-eXpect is the truth-seeking tool. It uses a multi-agent interface and large-scale simulation to predict human reactions to tweets, speeches, and any other input text. You can't do this with most AIs - they're censored and cannot always reflect the full spectrum of human opinion. Using Grok (unfiltered & diverse) and X (to crowdsource real human personas), we can now simulate entire communities' raw reactions to any topic (politics, consumer behavior, etc). eXpect will allow the world to more accurately identify the communal source of truth... to provide a crystal ball into the future. And, as a bonus, on X you can predict how many likes your tweet will get!
+[eXpect](https://tryexpect.com/login) is the truth-seeking tool. It uses a multi-agent interface and large-scale simulation to predict human reactions to tweets, speeches, and any other input text. You can't do this with most AIs - they're censored and cannot always reflect the full spectrum of human opinion. Using Grok (unfiltered & diverse) and X (to crowdsource real human personas), we can now simulate entire communities' raw reactions to any topic (politics, consumer behavior, etc). eXpect will allow the world to more accurately identify the communal source of truth... to provide a crystal ball into the future. And, as a bonus, on X you can predict how many likes your tweet will get!
+
+**Check it out at [tryexpect.com](https://tryexpect.com/login)!**
 
 # Stack
 
