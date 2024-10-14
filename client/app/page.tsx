@@ -6,14 +6,11 @@ import { useEffect } from "react";
 import { useProfileStore } from "./utils/stores/profile";
 
 export default function Home() {
-  const { handle, loadHandle, loadProfilePicture, loadName } =
-    useProfileStore();
+  const { handle, loadHandle } = useProfileStore();
   const router = useRouter();
 
   useEffect(() => {
     const foundHandle = loadHandle();
-    const foundProfilePicture = loadProfilePicture();
-    const foundName = loadName();
 
     if (foundHandle === "") {
       router.push("/login");

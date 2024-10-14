@@ -21,15 +21,18 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { loadHandle } = useProfileStore();
+  const { loadHandle, loadProfilePicture, loadName } = useProfileStore();
+
   const router = useRouter();
   useEffect(() => {
     const foundHandle = loadHandle();
+    loadProfilePicture();
+    loadName();
 
     if (foundHandle === "") {
       router.push("/login");
     }
-  }, [loadHandle, router]);
+  }, [loadHandle, loadProfilePicture, loadName, router]);
 
   return (
     <html lang="en" data-theme="dark">
