@@ -39,7 +39,6 @@ export default function LoginPage() {
 
   const handleLogin = () => {
     setLoading(true);
-    setHandle(tempHandle);
 
     const handleGetUserInfo = async () => {
       try {
@@ -51,6 +50,7 @@ export default function LoginPage() {
         }
 
         const data = await response.json();
+        setHandle(tempHandle);
         setName(data.data.name);
         setProfilePicture(data.data.profile_image_url || data.data.image_url);
 
