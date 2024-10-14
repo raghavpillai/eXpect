@@ -53,13 +53,6 @@ export default function ProfileSection() {
         <MenuItem
           bg="rgba(255,255,255,0)"
           _hover={{ bg: "rgba(255,255,255,0.2)" }}
-          onClick={goToProfile}
-        >
-          Profile
-        </MenuItem>
-        <MenuItem
-          bg="rgba(255,255,255,0)"
-          _hover={{ bg: "rgba(255,255,255,0.2)" }}
           onClick={handleLogout}
         >
           Logout
