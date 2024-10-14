@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import "./globals.css";
 import { Providers } from "./providers";
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -36,6 +37,9 @@ export default function RootLayout({
 
   return (
     <html lang="en" data-theme="dark">
+      <head>
+        <title>eXpect</title>
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Providers>{children}</Providers>
       </body>
