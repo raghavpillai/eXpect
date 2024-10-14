@@ -20,3 +20,17 @@ Note: you'll need API keys (into .env) to run. We use a round robin key system (
 1. Pulling X Data: we pull 1,000 of your followers, sample 100 at random, and then pull 100 of their tweets all simultaneously via the X API.
 2. Simulation: we simultaneously make 100 calls to Grok mini. Each digests an individual's Twitter profile and tweets in order to simulate their reaction to a query.
 3. Display: we display a histogram of the community's sentiment (float) and a host of reactions (string).
+
+# Installation and Layout
+This monorepo contains both `client` and `server` folders, for the frontend and backend individually. 
+
+* Frontend Steps
+    * `pnpm install`
+    * `pnpm dev`
+* Backend Steps
+    * `python3 -m venv venv`
+    * `source venv/bin/activate`
+    * `pip3 install -r requirements.txt`
+        * Alternatively, you can use `uv` to install as well!
+    * Then, you can run `api.py` to spin up the server!
+    
