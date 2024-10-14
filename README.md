@@ -24,13 +24,13 @@ Note: you'll need API keys (into .env) to run. We use a round robin key system (
 
 # Installation and Layout
 
-This monorepo contains both `client` and `server` folders, for the frontend and backend individually.
-
 - Frontend Steps
+  - Ensure your `.env` file is correclty populated
   - `pnpm install`
   - `pnpm dev`
   - **_NOTE: alternatively, you can follow the steps in the `Dockerfile` to run the frontend client!_**
 - Backend Steps
+  - Ensure your `.env` file is correclty populated
   - `python3 -m venv .venv`
   - `source .venv/bin/activate`
   - `pip3 install -r requirements.txt`
