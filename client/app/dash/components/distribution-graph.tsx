@@ -1,9 +1,7 @@
-// @ts-nocheck
-
 "use client";
 
 import { Box } from "@chakra-ui/react";
-import { Point, ResponsiveLine, Serie } from "@nivo/line";
+import { ResponsiveLine, Serie } from "@nivo/line";
 import { useEffect, useState } from "react";
 
 interface Post {
@@ -79,8 +77,8 @@ export default function DistributionGraph({
     return () => clearTimeout(timer);
   }, []);
 
-  const handleSlice = (slice: { points: readonly Point[] }) => {
-    const clickedX = slice.points[0].data.x as number;
+  const handleSlice = (slice: { points: any }) => {
+    const clickedX = slice.points[0].data.x as any;
     if (!startScore) {
       setStartScore(clickedX);
       setEndScore(null);
@@ -103,6 +101,37 @@ export default function DistributionGraph({
 
     return kdeData.filter((point) => point.x >= start && point.x <= end);
   };
+
+  const markers = [
+    startScore !== null
+      ? {
+          axis: "x" as const,
+          value: startScore,
+          lineStyle: {
+            stroke: "#808080",
+            strokeWidth: 1,
+            strokeDasharray: "5,5",
+          },
+          legend: "",
+          legendOrientation: "vertical" as const,
+          textStyle: { fill: "#FFFFFF" },
+        }
+      : null,
+    endScore !== null
+      ? {
+          axis: "x" as const,
+          value: endScore,
+          lineStyle: {
+            stroke: "#808080",
+            strokeWidth: 1,
+            strokeDasharray: "5,5",
+          },
+          legend: "",
+          legendOrientation: "vertical" as const,
+          textStyle: { fill: "#FFFFFF" },
+        }
+      : null,
+  ].filter((marker): marker is NonNullable<typeof marker> => marker !== null);
 
   return (
     <Box h="full" w="full" position="relative">
@@ -197,7 +226,6 @@ export default function DistributionGraph({
             },
           },
           tooltip: {
-            color: "#FFFFFF",
             container: {
               background: "rgba(128, 128, 128, 1)",
               fontSize: 12,
@@ -221,43 +249,18 @@ export default function DistributionGraph({
             </strong>
           </div>
         )}
-        onClick={handleSlice}
-        brushBorderColor="rgba(255,255,255,0.5)"
-        brushBorderWidth={1}
-        brushProps={{
-          brushColor: "rgba(255,255,255,0.1)",
-        }}
+        onClick={handleSlice as any}
+        // brushBorderColor="rgba(255,255,255,0.5)"
+        // brushBorderWidth={1}
+        // brushProps={{
+        //   brushColor: "rgba(255,255,255,0.1)",
+        // }}
         margin={{ top: 0, right: 10, bottom: 30, left: 40 }}
-        markers={[
-          startScore && {
-            axis: "x",
-            value: startScore,
-            lineStyle: {
-              stroke: "#808080",
-              strokeWidth: 1,
-              strokeDasharray: "5,5",
-            },
-            legend: "Start",
-            legendOrientation: "vertical",
-            legendTextColor: "#FFFFFF", // Make legend text white
-          },
-          endScore && {
-            axis: "x",
-            value: endScore,
-            lineStyle: {
-              stroke: "#808080",
-              strokeWidth: 1,
-              strokeDasharray: "5,5",
-            },
-            legend: "End",
-            legendOrientation: "vertical",
-            legendTextColor: "#FFFFFF", // Make legend text white
-          },
-        ].filter(Boolean)}
+        markers={markers}
         // Add these animation properties
         animate={true}
         motionConfig="gentle"
-        transitionMode="default"
+        // transitionMode="default"
         layers={[
           "grid",
           "markers",
