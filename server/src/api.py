@@ -12,6 +12,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from src.config import GROK_API_KEY_CYCLE, GROK_API_KEYS, GROK_LLM_API_URL
+from src.database import Database
 from src.middleware import ReferrerCheckMiddleware
 from src.prompts import SYSTEM_PROMPT, USER_PROMPT
 from src.rate_limiter import limiter
@@ -158,6 +159,8 @@ async def sample_x(request: Request) -> StreamingResponse:
         raise HTTPException(
             status_code=400, detail="Missing username or sampling_text query parameters"
         )
+
+    Database.log_user_usage(username)
 
     try:
         sample_response: UserSampleResponse = (

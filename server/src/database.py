@@ -18,5 +18,9 @@ class _Database:
         collection = self.db[collection_name]
         collection.update_one({"_id": key}, {"$set": {"data": data}}, upsert=True)
 
+    def log_user_usage(self, username: str):
+        collection = self.db["user_usage"]
+        collection.update_one({"_id": username}, {"$inc": {"usage": 1}}, upsert=True)
+
 
 Database = _Database()

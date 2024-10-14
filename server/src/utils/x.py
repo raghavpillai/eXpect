@@ -12,8 +12,6 @@ from src.utils.utils import print_rate_limits
 async def call_api_with_retry(url, params=None, headers=None, printLimits=False):
     """Calls the API with all bearer tokens and returns results if successful."""
     try:
-        print(f"CALLING {url}...")
-
         if headers is None:
             headers = {}
 
