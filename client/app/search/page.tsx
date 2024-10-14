@@ -21,7 +21,7 @@ const MotionBox = motion(Box as any);
 const MotionVStack = motion(VStack as any);
 const MotionButton = motion(Button as any);
 
-const BackgroundImage = () => {
+const BackgroundImage = (): React.ReactNode => {
   return (
     <MotionBox
       position="absolute"
@@ -55,7 +55,10 @@ export default function SearchPage() {
   const [isFocused, setIsFocused] = useState(false);
   const { setSearchQuery } = useSearchQueryStore();
   const router = useRouter();
-  const handlePostInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+
+  const handlePostInputChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ): void => {
     setPostQuery(e.target.value);
 
     e.target.style.height = "auto";
@@ -65,7 +68,7 @@ export default function SearchPage() {
     }
   };
 
-  const handleSearchSubmit = () => {
+  const handleSearchSubmit = (): void => {
     setLoading(true);
     setSearchQuery(postQuery);
 
@@ -75,7 +78,7 @@ export default function SearchPage() {
     }, 1000);
   };
 
-  const handleFocus = (focused: boolean) => {
+  const handleFocus = (focused: boolean): void => {
     setIsFocused(focused);
   };
 

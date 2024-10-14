@@ -67,8 +67,6 @@ export default function DashPage() {
 
     const handleSendQuery = async () => {
       try {
-        console.log("Handle", handle);
-        console.log("Search Query", searchQuery);
         const url = `${process.env.NEXT_PUBLIC_API_URL}/sample_x?username=${handle}&sampling_text=${searchQuery}`;
         const response = await fetch(url);
 
@@ -91,7 +89,7 @@ export default function DashPage() {
             }
             if (value) {
               buffer += decoder.decode(value, { stream: true });
-              let lines = buffer.split("\n");
+              const lines = buffer.split("\n");
               buffer = lines.pop() ?? ""; // Save the last incomplete line
               for (const line of lines) {
                 if (line.trim()) {
@@ -127,7 +125,7 @@ export default function DashPage() {
     };
 
     handleSendQuery();
-  }, [handle, searchQuery]);
+  }, [handle, searchQuery, router]);
 
   const getDistributedPosts = (posts: any[], count: number) => {
     const filteredPosts = posts.filter((post) => {
