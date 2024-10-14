@@ -170,12 +170,12 @@ export default function LoginPage() {
             placeholder="@rag_pil"
             value={tempHandle}
             onChange={handleTempHandleChange}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 1.5 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 1.5 }}
           />
           <MotionButton
-            bg="white"
+            bg={tempHandle === "" ? "rgba(255,255,255,0.4)" : "white"}
             color="black"
             rightIcon={<ChevronRightIcon />}
             onClick={handleLogin}
@@ -184,9 +184,9 @@ export default function LoginPage() {
             disabled={tempHandle === ""}
             _hover={{ bg: "rgba(255,255,255,0.6)" }}
             isLoading={loading}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 1.7 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 1.2 }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
