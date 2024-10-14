@@ -172,7 +172,7 @@ export default function LoginPage() {
             onChange={handleTempHandleChange}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 1.5 }}
+            transition={{ duration: 0.1, delay: 1.8, ease: "easeInOut" }}
           />
           <MotionButton
             bg={tempHandle === "" ? "rgba(255,255,255,0.4)" : "white"}
@@ -186,7 +186,7 @@ export default function LoginPage() {
             isLoading={loading}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 1.2 }}
+            transition={{ duration: 0.1, delay: 2.1, ease: "easeInOut" }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
