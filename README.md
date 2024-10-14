@@ -24,16 +24,17 @@ Note: you'll need API keys (into .env) to run. We use a round robin key system (
 
 # Installation and Layout
 
-This monorepo contains both `client` and `server` folders, for the frontend and backend individually.
-
-- Frontend Steps
-  - `pnpm install`
-  - `pnpm dev`
-  - **_NOTE: alternatively, you can follow the steps in the `Dockerfile` to run the frontend client!_**
-- Backend Steps
-  - `python3 -m venv venv`
-  - `source venv/bin/activate`
-  - `pip3 install -r requirements.txt`
-    - Alternatively, you can use `uv` to install as well!
-  - Then, you can run `uvicorn src.api:app --host 0.0.0.0 --port 8080 --reload` from the `/server` directory to locally spin up the API!
-  - **_NOTE: alternatively, you can follow the steps in the `Dockerfile` to run the API!_**
+* Frontend Steps
+    * Ensure your `.env` file is correclty populated
+    * `pnpm install`
+    * `pnpm dev`
+     * ***NOTE: alternatively, you can follow the steps in the `Dockerfile` to run the frontend client!***
+* Backend Steps
+    * Ensure your `.env` file is correclty populated
+    * `python3 -m venv venv`
+    * `source venv/bin/activate`
+    * `pip3 install -r requirements.txt`
+        * Alternatively, you can use `uv` to install as well!
+    * Then, you can run `uvicorn src.api:app --host 0.0.0.0 --port 8080 --reload` from the `/server` directory to locally spin up the API!
+    * ***NOTE: alternatively, you can follow the steps in the `Dockerfile` to run the API!***
+    
