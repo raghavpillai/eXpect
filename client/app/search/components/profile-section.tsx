@@ -16,10 +16,13 @@ import { useRouter } from "next/navigation";
 export default function ProfileSection() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter();
-  const { handle, setHandle } = useProfileStore();
+  const { handle, setHandle, profilePicture, setProfilePicture, setName } =
+    useProfileStore();
 
   const handleLogout = () => {
     setHandle("");
+    setProfilePicture("");
+    setName("");
     router.push("/login");
   };
 
@@ -40,13 +43,13 @@ export default function ProfileSection() {
         cursor="pointer"
       >
         <HStack spacing={3}>
-          <Avatar src="/x-icon.png" size="xs" filter="invert(100%)" />
+          <Avatar src={profilePicture} size="xs" />
           <Text fontSize="sm" color="gray.400">
             {handle}
           </Text>
         </HStack>
       </MenuButton>
-      <MenuList bg="rgba(255,255,255,0.1)">
+      <MenuList bg="rgba(255,255,255,0.1)" backdropFilter="blur(10px)">
         <MenuItem
           bg="rgba(255,255,255,0)"
           _hover={{ bg: "rgba(255,255,255,0.2)" }}

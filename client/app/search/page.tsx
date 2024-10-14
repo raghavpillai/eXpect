@@ -60,7 +60,8 @@ export default function SearchPage() {
 
     e.target.style.height = "auto";
     e.target.style.height = `${e.target.scrollHeight}px`;
-    if (e.target.scrollHeight == 58) {
+    console.log(e.target.scrollHeight);
+    if (e.target.scrollHeight == 58 || e.target.scrollHeight == 59) {
       e.target.style.height = "38px";
     }
   };

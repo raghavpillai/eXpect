@@ -24,6 +24,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { IoArrowBack } from "react-icons/io5";
+import { LuMessagesSquare } from "react-icons/lu";
 import BackgroundImage from "./components/background-image";
 import Graphs from "./components/graphs";
 import LoadingModal from "./components/loading-modal";
@@ -319,6 +320,7 @@ export default function DashPage() {
           {startScore && endScore ? `Sampled Posts` : "Posts"}
         </Text>
         <MotionButton
+          leftIcon={<LuMessagesSquare />}
           onClick={() => setIsAllPostsModalOpen(true)}
           mb={4}
           p={3}
@@ -328,6 +330,8 @@ export default function DashPage() {
           backdropFilter="blur(3px)"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          borderRadius="full"
+          border="1px solid rgba(255,255,255,0.4)"
         >
           View All
         </MotionButton>
