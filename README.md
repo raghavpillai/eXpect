@@ -27,10 +27,12 @@ This monorepo contains both `client` and `server` folders, for the frontend and 
 * Frontend Steps
     * `pnpm install`
     * `pnpm dev`
+     * ***NOTE: alternatively, you can follow the steps in the `Dockerfile` to run the frontend client!***
 * Backend Steps
     * `python3 -m venv venv`
     * `source venv/bin/activate`
     * `pip3 install -r requirements.txt`
         * Alternatively, you can use `uv` to install as well!
     * Then, you can run `api.py` to spin up the server!
+    * ***NOTE: alternatively, you can follow the steps in the `Dockerfile` to run the API!***
     
