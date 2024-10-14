@@ -4,7 +4,6 @@ import json
 import traceback
 import tracemalloc
 from typing import Any
-
 import httpx
 import uvicorn
 from dotenv import load_dotenv
@@ -19,11 +18,13 @@ from src.utils.functions import (
     sample_users_with_tweets_from_username,
 )
 from src.utils.models import GrokImpersonationReply, UserSampleResponse, UserWithTweets
+from src.middleware import ReferrerCheckMiddleware
 
 load_dotenv(".env")
 
 app: FastAPI = FastAPI(title="API", version="1.0.0")
 
+app.add_middleware(ReferrerCheckMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
