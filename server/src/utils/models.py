@@ -25,7 +25,7 @@ class UserSampleResponse(BaseModel):
 class GrokImpersonationReply(BaseModel):
     explanation: str = Field(
         ...,
-        description="Concise chain of thought and explanation of how the person's profile should be used to impersonate the input post. 2-3 sentences max.",
+        description="Concise 3rd person chain of thought of your thought process and explanation of how the person's profile should be used to impersonate the input post. 2-3 sentences max.",
     )
     response: str = Field(
         ...,
@@ -37,5 +37,5 @@ class GrokImpersonationReply(BaseModel):
     )
     sentiment: float = Field(
         ...,
-        description="A sentiment score of the person's thoughts on the input post. 0 is disagree, 1 is agree. This should take into account how the person's posts typically lean, not just neutral.",
+        description="An exact sentiment score of the person's thoughts on the input post. 0 is disagree, 1 is agree. This should take into account how the person's posts typically lean, not just neutral. Use 2 exact decimal places, and prefer decimal places that have not been used before to ensure a spread of values to graph.",
     )
