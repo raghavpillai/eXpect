@@ -5,8 +5,11 @@ import {
   Box,
   Button,
   HStack,
+  Icon,
   Image,
   Input,
+  Link,
+  SimpleGrid,
   Text,
   VStack,
   useToast,
@@ -15,9 +18,11 @@ import { useProfileStore } from "@utils/stores/profile";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { FaGithub } from "react-icons/fa";
 
 const MotionBox = motion(Box as any);
 const MotionVStack = motion(VStack as any);
+const MotionHStack = motion(HStack as any);
 const MotionText = motion(Text as any);
 const MotionImage = motion(Image as any);
 const MotionInput = motion(Input as any);
@@ -192,6 +197,89 @@ export default function LoginPage() {
           >
             Login
           </MotionButton>
+        </MotionVStack>
+
+        <MotionVStack
+          position="absolute"
+          bottom="10px"
+          left="0"
+          right="0"
+          w="full"
+          spacing={4}
+          align="center"
+          justify="center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 2.4 }}
+        >
+          <VStack mb={4}>
+            <Image
+              src="xai-icon.svg"
+              alt="hackathon"
+              w="50px"
+              filter="invert(100%)"
+            />
+            <Text fontSize="sm" color="white">
+              Hackathon
+            </Text>
+          </VStack>
+          <Box w="full" px={4}>
+            <SimpleGrid
+              columns={{ base: 1, sm: 2, md: 4 }}
+              spacing={4}
+              justifyItems="center"
+            >
+              {[
+                {
+                  firstName: "Ray",
+                  lastName: "Del Vecchio",
+                  handle: "raydelvecc",
+                },
+                { firstName: "Raghav", lastName: "Pillai", handle: "rag_pil" },
+                {
+                  firstName: "Ethan",
+                  lastName: "Shaotran",
+                  handle: "EShaotran",
+                },
+                {
+                  firstName: "Giovanni",
+                  lastName: "D'Antonio",
+                  handle: "GiovanniMDanto2",
+                },
+              ].map((user, index) => (
+                <VStack key={index} spacing={0} align="center">
+                  <Text
+                    fontSize="sm"
+                    color="white"
+                    textAlign="center"
+                    fontWeight="bold"
+                  >
+                    {user.firstName} {user.lastName}
+                  </Text>
+                  <Link
+                    href={`https://x.com/${user.handle}`}
+                    isExternal
+                    color="blue.300"
+                    fontSize="sm"
+                  >
+                    @{user.handle}
+                  </Link>
+                </VStack>
+              ))}
+            </SimpleGrid>
+          </Box>
+
+          <Button
+            leftIcon={<Icon as={FaGithub} />}
+            colorScheme="gray"
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              window.open("https://github.com/raghavpillai/eXpect", "_blank")
+            }
+          >
+            View on GitHub
+          </Button>
         </MotionVStack>
       </MotionVStack>
     </MotionBox>

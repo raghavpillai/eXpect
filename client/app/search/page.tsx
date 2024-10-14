@@ -5,8 +5,12 @@ import {
   Box,
   Button,
   HStack,
+  Icon,
   InputGroup,
   InputLeftElement,
+  Link,
+  SimpleGrid,
+  Text,
   Textarea,
   VStack,
 } from "@chakra-ui/react";
@@ -14,6 +18,7 @@ import { useSearchQueryStore } from "@utils/stores/search";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { FaGithub } from "react-icons/fa";
 import ProfileSection from "./components/profile-section";
 import TitleSection from "./components/title-section";
 
@@ -200,6 +205,79 @@ export default function SearchPage() {
             </VStack>
           </MotionBox>
         </MotionBox>
+      </MotionVStack>
+
+      <MotionVStack
+        position="absolute"
+        bottom="10px"
+        left="0"
+        right="0"
+        w="full"
+        spacing={4}
+        align="center"
+        justify="center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 2 }}
+        zIndex={40}
+      >
+        <Box w={{ base: "full", md: "60%", lg: "50%" }} px={4} mx="auto">
+          <SimpleGrid
+            columns={{ base: 1, sm: 2, md: 4 }}
+            spacing={4}
+            justifyItems="center"
+          >
+            {[
+              {
+                firstName: "Ray",
+                lastName: "Del Vecchio",
+                handle: "raydelvecc",
+              },
+              { firstName: "Raghav", lastName: "Pillai", handle: "rag_pil" },
+              {
+                firstName: "Ethan",
+                lastName: "Shaotran",
+                handle: "EShaotran",
+              },
+              {
+                firstName: "Giovanni",
+                lastName: "D'Antonio",
+                handle: "GiovanniMDanto2",
+              },
+            ].map((user, index) => (
+              <VStack key={index} spacing={0} align="center">
+                <Text
+                  fontSize="sm"
+                  color="white"
+                  textAlign="center"
+                  fontWeight="bold"
+                >
+                  {user.firstName} {user.lastName}
+                </Text>
+                <Link
+                  href={`https://x.com/${user.handle}`}
+                  isExternal
+                  color="blue.300"
+                  fontSize="sm"
+                >
+                  @{user.handle}
+                </Link>
+              </VStack>
+            ))}
+          </SimpleGrid>
+        </Box>
+
+        <Button
+          leftIcon={<Icon as={FaGithub} />}
+          colorScheme="gray"
+          variant="outline"
+          size="sm"
+          onClick={() =>
+            window.open("https://github.com/raghavpillai/eXpect", "_blank")
+          }
+        >
+          View on GitHub
+        </Button>
       </MotionVStack>
     </MotionBox>
   );

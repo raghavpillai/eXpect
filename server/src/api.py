@@ -4,6 +4,7 @@ import json
 import traceback
 import tracemalloc
 from typing import Any
+
 import httpx
 import uvicorn
 from dotenv import load_dotenv
@@ -11,6 +12,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from src.config import GROK_API_KEY_CYCLE, GROK_API_KEYS, GROK_LLM_API_URL
+from src.middleware import ReferrerCheckMiddleware
 from src.prompts import SYSTEM_PROMPT, USER_PROMPT
 from src.rate_limiter import limiter
 from src.utils.functions import (
@@ -18,7 +20,6 @@ from src.utils.functions import (
     sample_users_with_tweets_from_username,
 )
 from src.utils.models import GrokImpersonationReply, UserSampleResponse, UserWithTweets
-from src.middleware import ReferrerCheckMiddleware
 
 load_dotenv(".env")
 

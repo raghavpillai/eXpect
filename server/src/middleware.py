@@ -1,13 +1,18 @@
 from fastapi import HTTPException, Request
-from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.datastructures import URL
+from starlette.middleware.base import BaseHTTPMiddleware
 
-ALLOWED_ORIGINS = ["localhost", "expect.vercel.app"]
+ALLOWED_ORIGINS = [
+    "localhost",
+    "expect.vercel.app",
+    "tryexpect.com",
+    "www.tryexpect.com",
+]
+
 
 class ReferrerCheckMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        referer = request.headers.get("Referer")
-        if referer:
+        if referer := request.headers.get("Referer"):
             referer_url = URL(referer)
             allowed_origins = ALLOWED_ORIGINS
             if referer_url.hostname not in allowed_origins:
