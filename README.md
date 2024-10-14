@@ -33,6 +33,6 @@ This monorepo contains both `client` and `server` folders, for the frontend and 
     * `source venv/bin/activate`
     * `pip3 install -r requirements.txt`
         * Alternatively, you can use `uv` to install as well!
-    * Then, you can run `python3 -m src.api` from the `/server` directory to locally spin up the API!
+    * Then, you can run `uvicorn src.api:app --host 0.0.0.0 --port 8080 --reload` from the `/server` directory to locally spin up the API!
     * ***NOTE: alternatively, you can follow the steps in the `Dockerfile` to run the API!***
     
