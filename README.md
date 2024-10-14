@@ -39,4 +39,4 @@ Note: you'll need API keys (into .env) to run. We use a round robin key system (
     * ***NOTE: alternatively, you can follow the steps in the `Dockerfile` to run the API!***
     
 # Credits
-Developed by Raghav Pillai, Ray Del Vecchio, Ethan Shaotran, and Giovanni D'Antonio during the first XAI hackathon in San Francisco.
+Developed by [Raghav Pillai](https://x.com/rag_pil), [Ray Del Vecchio](https://x.com/raydelvecc), [Ethan Shaotran](https://x.com/EShaotran), and [Giovanni D'Antonio](https://www.linkedin.com/in/giovanni-m-d-antonio-94a2951b2/) during the first XAI hackathon in San Francisco.
