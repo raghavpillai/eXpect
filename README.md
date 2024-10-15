@@ -13,7 +13,7 @@ This is a fun way to explore these very new APIs:
 - X API:
   - https://developer.x.com/en/docs/x-api/getting-started/make-your-first-request
   - API Reference: https://developer.x.com/en/docs/api-reference-index
-- XAI API:
+- xAI API:
   - https://docs.x.ai/api/integrations
 
 Note: you'll need API keys (into .env) to run. We use a round robin key system (see api.py)!
@@ -41,4 +41,4 @@ Note: you'll need API keys (into .env) to run. We use a round robin key system (
     * ***NOTE: alternatively, you can follow the steps in the `Dockerfile` to run the API!***
     
 # Credits
-Developed by [Raghav Pillai](https://x.com/rag_pil), [Ray Del Vecchio](https://x.com/raydelvecc), [Ethan Shaotran](https://x.com/EShaotran), and [Giovanni D'Antonio](https://x.com/GiovanniMDanto2) during the first XAI hackathon in San Francisco.
+Developed by [Raghav Pillai](https://x.com/rag_pil), [Ray Del Vecchio](https://x.com/raydelvecc), [Ethan Shaotran](https://x.com/EShaotran), and [Giovanni D'Antonio](https://x.com/GiovanniMDanto2) during the first xAI hackathon in San Francisco.
