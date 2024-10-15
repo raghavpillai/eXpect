@@ -32,9 +32,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-if not all(GROK_API_KEYS) or not GROK_LLM_API_URL:
+if not any(GROK_API_KEYS) or not GROK_LLM_API_URL:
     raise ValueError(
-        "All GROK_API_KEYs and GROK_LLM_API_URL must be set in environment variables."
+        "Atleast one GROK_API_KEY and GROK_LLM_API_URL must be set in environment variables."
     )
 
 
