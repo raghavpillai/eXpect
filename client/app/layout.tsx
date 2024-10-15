@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import "./globals.css";
 import { Providers } from "./providers";
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -21,18 +22,24 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { loadHandle } = useProfileStore();
+  const { loadHandle, loadProfilePicture, loadName } = useProfileStore();
+
   const router = useRouter();
   useEffect(() => {
     const foundHandle = loadHandle();
+    loadProfilePicture();
+    loadName();
 
     if (foundHandle === "") {
       router.push("/login");
     }
-  }, [loadHandle, router]);
+  }, [loadHandle, loadProfilePicture, loadName, router]);
 
   return (
     <html lang="en" data-theme="dark">
+      <head>
+        <title>eXpect</title>
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Providers>{children}</Providers>
       </body>
