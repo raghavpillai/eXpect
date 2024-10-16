@@ -35,12 +35,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-if not any(GROK_API_KEYS) or not GROK_LLM_API_URL:
-    raise ValueError(
-        "Atleast one GROK_API_KEY and GROK_LLM_API_URL must be set in environment variables."
-    )
-
-
 def parse_input(json_input: dict[str, Any]) -> tuple[str, str, list[str], str]:
     """Parse the JSON input and extract necessary fields."""
     user = json_input.get("user", {})

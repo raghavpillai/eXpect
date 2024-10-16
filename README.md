@@ -16,7 +16,7 @@ This is a fun way to explore these very new APIs:
 - xAI API:
   - https://docs.x.ai/api/integrations
 
-Note: you'll need API keys (into .env) to run. We use a round robin key system (see api.py)!
+Note: you'll need API keys (into .env) to run. We use a round robin key system (see api.py) to rotate with API limits. Populate any of the keys to use if you just have one of each!
 
 # How it Works
 
