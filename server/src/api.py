@@ -104,7 +104,7 @@ async def impersonate_reply(
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
         ],
-        "model": "grok-2-public",
+        "model": "grok-2-mini-public",
         "stream": False,
         "temperature": 0.9,
     }
