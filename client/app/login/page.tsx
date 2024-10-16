@@ -212,7 +212,7 @@ export default function LoginPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 2.4 }}
         >
-          <VStack mb={4}>
+          <VStack mb={{ base: 1, md: 4 }}>
             <Image
               src="xai-icon.svg"
               alt="hackathon"
@@ -225,8 +225,8 @@ export default function LoginPage() {
           </VStack>
           <Box w="full" px={4}>
             <SimpleGrid
-              columns={{ base: 1, sm: 2, md: 4 }}
-              spacing={4}
+              columns={{ base: 2, sm: 2, md: 4 }}
+              spacing={{ base: 2, md: 4 }}
               justifyItems="center"
             >
               {[
@@ -273,7 +273,7 @@ export default function LoginPage() {
             leftIcon={<Icon as={FaGithub} />}
             colorScheme="gray"
             variant="outline"
-            size="sm"
+            size={{ base: "xs", md: "sm" }}
             onClick={() =>
               window.open("https://github.com/raghavpillai/eXpect", "_blank")
             }
