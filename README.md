@@ -42,3 +42,8 @@ Note: you'll need API keys (into .env) to run. We use a round robin key system (
     
 # Credits
 Developed by [Raghav Pillai](https://x.com/rag_pil), [Ray Del Vecchio](https://x.com/raydelvecc), [Ethan Shaotran](https://x.com/EShaotran), and [Giovanni D'Antonio](https://x.com/GiovanniMDanto2) during the first xAI hackathon in San Francisco.
+
+# Miscellaneous
+We were running into some rate limits, so tried to add an OpenAI API fallback. It didn't go very well. Grok is too good.
+
+![Evidence](client/public/grokbetter.png)
