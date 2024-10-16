@@ -11,7 +11,13 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-from src.config import GROK_API_KEY_CYCLE, GROK_API_KEYS, GROK_LLM_API_URL
+from openai import AsyncOpenAI
+from src.config import (
+    GROK_API_KEY_CYCLE,
+    GROK_API_KEYS,
+    GROK_LLM_API_URL,
+    OPENAI_API_KEY,
+)
 from src.database import Database
 from src.middleware import ReferrerCheckMiddleware
 from src.prompts import SYSTEM_PROMPT, USER_PROMPT
@@ -92,6 +98,17 @@ async def make_grok_api_request(payload: dict[str, Any]) -> dict[str, Any]:
     )
 
 
+async def _make_openai_api_request(payload: dict[str, Any]) -> dict[str, Any]:
+    """FOR TESTING ONLY"""
+    client = AsyncOpenAI(api_key=OPENAI_API_KEY)
+    payload["model"] = "gpt-4o-mini"
+    payload.pop("stream", None)
+    response = await client.beta.chat.completions.parse(
+        **payload, response_format=GrokImpersonationReply
+    )
+    return response.choices[0].message.parsed
+
+
 async def impersonate_reply(
     name: str, bio: str, location: str, sample_tweets: list[str], post_content: str
 ) -> GrokImpersonationReply:
@@ -109,12 +126,17 @@ async def impersonate_reply(
         "temperature": 0.9,
     }
 
-    data = await make_grok_api_request(payload)
-
     reply = ""
-    if "choices" in data and len(data["choices"]) > 0:
-        reply = data["choices"][0].get("message", {}).get("content", "").strip()
+    reply = await _make_openai_api_request(payload)
+    try:
+        data = await make_grok_api_request(payload)
+        if "choices" in data and len(data["choices"]) > 0:
+            reply = data["choices"][0].get("message", {}).get("content", "").strip()
+    except Exception:
+        print("Falling back to OpenAI API request.")
+        return await _make_openai_api_request(payload)
 
+    print(reply)
     if not reply:
         raise ValueError("No reply received from Grok LLM API.")
 

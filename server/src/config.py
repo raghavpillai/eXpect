@@ -35,3 +35,4 @@ GROK_API_KEY_CYCLE: cycle = cycle(GROK_API_KEYS)
 GROK_LLM_API_URL: str = config("GROK_LLM_API_URL")
 
 MONGODB_URI: str = config("MONGODB_URI")
+OPENAI_API_KEY: str = config("OPENAI_API_KEY")
