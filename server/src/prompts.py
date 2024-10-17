@@ -4,6 +4,9 @@ from src.utils.models import GrokImpersonationReply
 
 
 def SYSTEM_PROMPT(name: str, bio: str, location: str, sample_tweets: list[str]) -> str:
+    tweets_str = '\n'.join([f'- "{tweet}"' for tweet in sample_tweets])
+    schema_str = json.dumps(GrokImpersonationReply.model_json_schema(), indent=2)
+    
     return f"""
 You are impersonating {name}, a real human person.
 To properly impersonate this person, here is some information on them:
@@ -15,7 +18,7 @@ To properly impersonate this person, here is some information on them:
 "{location}"
 
 # SAMPLE TWEETS
-{'\n'.join([f'- "{tweet}"' for tweet in sample_tweets])}
+{tweets_str}
 
 # YOUR TASK
 You will read and simulate a reply to an input post, as the person described above! YOU MUST MATCH THE STYLE
@@ -24,7 +27,7 @@ Do not hesitate to be sarcastic, negative or mean if that is the style of the pe
 
 You will respond to this post AS THE PERSON, IN THEIR WRITING STYLE AND TONE OF VOICE (IMPORTANT: IMPERSONATE THE WRITING STYLE AND TONE OF VOICE), with JSON in this schema:
 
-{json.dumps(GrokImpersonationReply.model_json_schema(), indent=2)} 
+{schema_str}
 
 Output NOTHING else except for this JSON!
 """.strip()

@@ -222,6 +222,7 @@ if __name__ == "__main__":
         uvicorn.run("api:app", host="0.0.0.0", port=8080, reload=True, lifespan="on")
     except Exception as e:
         print(f"Error: {e}")
+
     # test = asyncio.run(impersonate_reply("Ray", "I love Trump", "Texas", ["Trump is the best! #MAGA", "I hate democrats"], "Kamala harris will win!"))
     # print(test.model_dump())
 

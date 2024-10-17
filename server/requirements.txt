@@ -46,3 +46,4 @@ watchfiles
 websockets
 wrapt
 wsproto
+openai
