@@ -93,14 +93,41 @@ async def make_grok_api_request(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 async def _make_openai_api_request(payload: dict[str, Any]) -> dict[str, Any]:
-    """FOR TESTING ONLY"""
-    client = AsyncOpenAI(api_key=OPENAI_API_KEY)
-    payload["model"] = "gpt-4o-mini"
-    payload.pop("stream", None)
-    response = await client.beta.chat.completions.parse(
-        **payload, response_format=GrokImpersonationReply
-    )
-    return response.choices[0].message.parsed
+    """Make a request to the OpenAI API and handle errors."""
+    headers = {
+        "Authorization": f"Bearer {OPENAI_API_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "https://api.openai.com/v1/chat/completions", headers=headers, json=payload, timeout=60
+            )
+            response.raise_for_status()
+            return response.json()
+    except httpx.HTTPStatusError as http_err:
+        if http_err.response.status_code == 429:
+            print(f"Rate limit exceeded for OpenAI API key.")
+        else:
+            error_content = (
+                http_err.response.text
+                if http_err.response
+                else "No response content"
+            )
+            print(
+                f"OpenAI API HTTP Error: {http_err}\nResponse Content: {error_content}"
+            )
+        raise HTTPException(
+            status_code=http_err.response.status_code,
+            detail="Error occurred while making request to OpenAI API."
+        )
+    except httpx.RequestError as e:
+        print(f"OpenAI API Request Error: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Error occurred while making request to OpenAI API."
+        )
 
 
 async def impersonate_reply(
@@ -110,7 +137,7 @@ async def impersonate_reply(
     system_prompt = SYSTEM_PROMPT(name, bio, location, sample_tweets)
     user_prompt = USER_PROMPT(post_content)
 
-    payload = {
+    grok_payload = {
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
@@ -120,19 +147,30 @@ async def impersonate_reply(
         "temperature": 0.9,
     }
 
+    openai_payload = {
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        "model": "gpt-4o-mini",
+        "stream": False,
+        "temperature": 0.9,
+        "response_format": {"type": "json_object"}
+    }
+
     reply = ""
-    reply = await _make_openai_api_request(payload)
     try:
-        data = await make_grok_api_request(payload)
+        data = await make_grok_api_request(grok_payload)
         if "choices" in data and len(data["choices"]) > 0:
             reply = data["choices"][0].get("message", {}).get("content", "").strip()
     except Exception:
-        print("Falling back to OpenAI API request.")
-        return await _make_openai_api_request(payload)
+        print("ERROR with Grok. Falling back to OpenAI API request.")
+        data = await _make_openai_api_request(openai_payload)
+        if "choices" in data and len(data["choices"]) > 0:
+            reply = data["choices"][0].get("message", {}).get("content", "").strip()
 
-    print(reply)
     if not reply:
-        raise ValueError("No reply received from Grok LLM API.")
+        raise ValueError("No reply received from LLM API.")
 
     reply = reply.replace("```json", "").replace("```", "").strip()
     try:
@@ -142,6 +180,9 @@ async def impersonate_reply(
             reply_json = ast.literal_eval(reply)
         except (SyntaxError, ValueError):
             raise ValueError("Failed to parse the reply as JSON or Python literal.")
+        
+    if 'properties' in reply_json:  # checking for properties field, since openai api takes the pydantic string literally (when you stringify a pydantic type, one of the fields is "properties")
+        reply_json = reply_json['properties']
 
     return GrokImpersonationReply(**reply_json)
 
